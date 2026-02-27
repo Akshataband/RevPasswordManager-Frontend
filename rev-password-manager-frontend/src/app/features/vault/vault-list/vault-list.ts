@@ -11,8 +11,7 @@ import { ViewPasswordModal } from '../../../shared/components/view-password-moda
   selector: 'app-vault-list',
   standalone: true,
   imports: [
-
-  CommonModule,
+    CommonModule,
     FormsModule,
     LoadingSpinner,
     ConfirmDialog,
@@ -28,7 +27,7 @@ export class VaultList implements OnInit {
   search = '';
   category = '';
   sortBy = 'createdAt';
-  direction = 'desc';
+  direction: 'asc' | 'desc' = 'desc';
 
   page = 0;
   size = 5;
@@ -70,29 +69,34 @@ export class VaultList implements OnInit {
           this.passwords = res || [];
           this.loading = false;
         },
-        error: () => this.loading = false
-      });
-    } else {
-      const params = {
-        search: this.search || '',
-        category: this.category || '',
-        page: this.page,
-        size: this.size,
-        sortBy: this.sortBy,
-        direction: this.direction
-      };
-
-      this.auth.searchVault(params).subscribe({
-        next: (res: any) => {
-          this.passwords = res?.content || [];
-          this.totalPages = res?.totalPages || 0;
-          this.totalElements = res?.totalElements || 0;
-          this.page = res?.number || 0;
+        error: () => {
           this.loading = false;
-        },
-        error: () => this.loading = false
+        }
       });
+      return; // IMPORTANT
     }
+
+    const params = {
+      search: this.search || '',
+      category: this.category || '',
+      page: this.page,
+      size: this.size,
+      sortBy: this.sortBy,
+      direction: this.direction
+    };
+
+    this.auth.searchVault(params).subscribe({
+      next: (res: any) => {
+        this.passwords = res?.content || [];
+        this.totalPages = res?.totalPages || 0;
+        this.totalElements = res?.totalElements || 0;
+        this.page = res?.number || 0;
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+      }
+    });
   }
 
   applyFilters() {
@@ -118,6 +122,7 @@ export class VaultList implements OnInit {
     request$.subscribe({
       next: () => {
         item.favorite = !item.favorite;
+
         if (this.showFavorites && !item.favorite) {
           this.passwords = this.passwords.filter(p => p.id !== item.id);
         }
@@ -131,7 +136,6 @@ export class VaultList implements OnInit {
     this.loadPasswords();
   }
 
-  // ===== DELETE WITH MODAL =====
   confirmDelete(id: number) {
     this.deleteId = id;
   }
@@ -145,7 +149,6 @@ export class VaultList implements OnInit {
     });
   }
 
-  // ===== NAVIGATION =====
   goToAdd() {
     this.router.navigate(['/add-password']);
   }
@@ -154,7 +157,6 @@ export class VaultList implements OnInit {
     this.router.navigate(['/edit-password', id]);
   }
 
-  // ===== VIEW MODAL =====
   viewPassword(id: number) {
     this.selectedId = id;
   }
@@ -163,7 +165,6 @@ export class VaultList implements OnInit {
     this.selectedId = null;
   }
 
-  // ===== PAGINATION =====
   prevPage() {
     if (this.page > 0) {
       this.page--;

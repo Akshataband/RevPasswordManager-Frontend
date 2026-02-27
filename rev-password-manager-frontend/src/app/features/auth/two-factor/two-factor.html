@@ -1,59 +1,23 @@
-<div class="auth-wrapper">
-  <div class="auth-card">
+<div class="twofactor-container">
 
-    <h2>Two-Factor Authentication</h2>
+  <h2>Two-Factor Authentication</h2>
 
-    <p *ngIf="twoFactorEnabled" class="enabled">
-      2FA is currently ENABLED
-    </p>
+  <p *ngIf="!isEnabled">2FA is currently DISABLED</p>
+  <p *ngIf="isEnabled">2FA is currently ENABLED</p>
 
-    <p *ngIf="!twoFactorEnabled" class="disabled">
-      2FA is currently DISABLED
-    </p>
+  <button *ngIf="!isEnabled" class="btn-primary" (click)="enable2FA()">
+    Enable 2FA
+  </button>
 
-    <!-- Enable Section -->
-    <div *ngIf="!twoFactorEnabled">
-
-      <button (click)="startEnable()" [disabled]="loading">
-        Enable 2FA
-      </button>
-
-      <div *ngIf="secret">
-
-        <p><strong>Secret:</strong> {{ secret }}</p>
-
-        <input
-          type="text"
-          [(ngModel)]="otp"
-          placeholder="Enter 6-digit code"
-          maxlength="6"
-        />
-
-        <button (click)="confirmEnable()" [disabled]="loading">
-          Confirm Enable
-        </button>
-
-      </div>
-
-    </div>
-
-    <!-- Disable Section -->
-    <div *ngIf="twoFactorEnabled">
-
-      <input
-        type="text"
-        [(ngModel)]="otp"
-        placeholder="Enter 6-digit code"
-        maxlength="6"
-      />
-
-      <button (click)="disable()" [disabled]="loading">
-        Disable 2FA
-      </button>
-
-    </div>
-
-    <p class="message">{{ message }}</p>
-
+  <div *ngIf="qrCode">
+    <img [src]="qrCode" width="200" />
+    <input type="text" [(ngModel)]="code" placeholder="Enter OTP">
+    <button class="btn-primary" (click)="confirm2FA()">Confirm</button>
   </div>
+
+  <div *ngIf="isEnabled">
+    <input type="text" [(ngModel)]="code" placeholder="Enter OTP">
+    <button class="btn-outline" (click)="disable2FA()">Disable 2FA</button>
+  </div>
+
 </div>

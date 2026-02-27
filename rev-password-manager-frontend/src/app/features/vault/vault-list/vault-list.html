@@ -103,7 +103,7 @@
 
 <!-- VIEW PASSWORD MODAL -->
 <app-view-password-modal
-  *ngIf="selectedId"
+  *ngIf="selectedId !== null"
   [passwordId]="selectedId"
   (close)="closeModal()">
 </app-view-password-modal>

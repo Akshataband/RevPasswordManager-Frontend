@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-two-factor',
@@ -12,104 +12,64 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class TwoFactor implements OnInit {
 
-  otp = '';
-  secret = '';
-  message = '';
-  loading = false;
-
-  enabling = false;
-  twoFactorEnabled = false;
+  isEnabled = false;
+  isLoading = true;
+  qrCode: string | null = null;
+  code = '';
 
   constructor(private auth: AuthService) {}
-
-  // ================= LOAD STATUS =================
 
   ngOnInit(): void {
     this.loadStatus();
   }
 
-  loadStatus(): void {
-    this.auth.get2FAStatus().subscribe({
-      next: (res: any) => {
-        this.twoFactorEnabled = res.enabled;
-      },
-      error: () => {
-        this.twoFactorEnabled = false;
-      }
-    });
-  }
-
-  // ================= ENABLE FLOW =================
-
-  startEnable(): void {
-
-    this.loading = true;
-    this.message = '';
-
-    this.auth.enable2FA().subscribe({
-      next: (secret: string) => {
-        this.secret = secret;
-        this.enabling = true;
-      },
-      error: (err: any) => {
-        this.message = err.error?.message || 'Failed to enable';
-      },
-      complete: () => this.loading = false
-    });
-  }
-
-  confirmEnable(): void {
-
-    if (!this.otp || this.otp.length !== 6) {
-      this.message = 'Enter valid 6-digit code';
-      return;
+  loadStatus() {
+  this.auth.get2FAStatus().subscribe({
+    next: (res: boolean) => {
+      console.log("2FA status:", res);
+      this.isEnabled = res;   
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.log("2FA status error:", err);
+      this.isLoading = false;
     }
+  });
+}
 
-    this.loading = true;
+  // enable2FA() {
+  //   this.auth.enable2FA().subscribe({
+  //     next: (res: string) => {
+  //       console.log("QR:", res);
+  //       this.qrCode = res; // backend should return QR string
+  //     }
+  //   });
+  // }
 
-    this.auth.confirm2FA(this.otp).subscribe({
-      next: () => {
-        this.message = '2FA Enabled Successfully';
-        this.resetState();
-        this.loadStatus();   
-      },
-      error: (err: any) => {
-        this.message = err.error?.message || 'Invalid code';
-        this.loading = false;
-      }
-    });
-  }
-
-  // ================= DISABLE FLOW =================
-
-  disable(): void {
-
-    if (!this.otp || this.otp.length !== 6) {
-      this.message = 'Enter valid 6-digit code';
-      return;
+  enable2FA() {
+  this.auth.enable2FA().subscribe({
+    next: (res: any) => {
+      this.qrCode = res.qr;
     }
+  });
+}
 
-    this.loading = true;
+confirm2FA() {
+  this.auth.confirm2FA(this.code).subscribe({
+    next: () => {
+      this.loadStatus();  
+      this.qrCode = null;
+      this.code = '';
+    }
+  });
+}
 
-    this.auth.disable2FA(this.otp).subscribe({
-      next: () => {
-        this.message = '2FA Disabled Successfully';
-        this.resetState();
-        this.loadStatus();   // 🔥 IMPORTANT
-      },
-      error: (err: any) => {
-        this.message = err.error?.message || 'Invalid code';
-        this.loading = false;
-      }
-    });
-  }
-
-  // ================= RESET =================
-
-  private resetState(): void {
-    this.otp = '';
-    this.secret = '';
-    this.enabling = false;
-    this.loading = false;
-  }
+disable2FA() {
+  this.auth.disable2FA(this.code).subscribe({
+    next: () => {
+      this.loadStatus();   
+      this.code = '';
+    }
+  });
+}
 }

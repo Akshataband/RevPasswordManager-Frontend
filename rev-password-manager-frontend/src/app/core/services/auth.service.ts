@@ -84,8 +84,8 @@ updateSecurityQuestions(data: any) {
 
   // ================= 2FA =================
 
-get2FAStatus() {
-  return this.http.get(`${this.api}/auth/2fa-status`);
+get2FAStatus(): Observable<boolean> {
+  return this.http.get<boolean>(`${this.api}/auth/2fa-status`);
 }
 
 enable2FA() {
