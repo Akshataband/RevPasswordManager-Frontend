@@ -1,0 +1,70 @@
+<div class="backup-container">
+
+  <h2>Vault Backup</h2>
+
+  <!-- Master Password -->
+  <label for="backupMasterPassword">
+    Master Password
+  </label>
+
+  <input
+    id="backupMasterPassword"
+    type="password"
+    [(ngModel)]="masterPassword"
+    placeholder="Enter master password" />
+
+  <div class="error" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <div class="success" *ngIf="successMessage">
+    {{ successMessage }}
+  </div>
+
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+  <div *ngIf="!loading">
+
+    <div class="backup-card">
+
+      <h3>Export Encrypted Backup</h3>
+
+      <button
+        class="btn-primary"
+        (click)="exportBackup()"
+        [disabled]="loading">
+        Download Backup
+      </button>
+
+    </div>
+
+    <div class="backup-card">
+
+      <h3>Import Encrypted Backup</h3>
+
+      <label for="backupFile">
+        Select Backup File (.enc)
+      </label>
+
+      <input
+        id="backupFile"
+        type="file"
+        accept=".enc"
+        (change)="onFileSelected($event)" />
+
+      <button
+        class="btn-primary"
+        (click)="importBackup()"
+        [disabled]="loading">
+        Import Backup
+      </button>
+
+    </div>
+
+    <button class="btn-outline" (click)="reset()">
+      Reset
+    </button>
+
+  </div>
+
+</div>

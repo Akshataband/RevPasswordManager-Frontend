@@ -1,0 +1,17 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+
+    <h2>Password Strength Analysis</h2>
+
+    <input type="password"
+           [(ngModel)]="password"
+           placeholder="Enter password" />
+
+    <button (click)="checkStrength()">Check</button>
+
+    <p *ngIf="strength">
+      Strength: <strong>{{ strength }}</strong>
+    </p>
+
+  </div>
+</div>

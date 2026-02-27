@@ -1,0 +1,38 @@
+.audit-container {
+  padding: 120px 10%;
+}
+
+.audit-container h2 {
+  color: var(--neon);
+  margin-bottom: 30px;
+}
+
+.audit-results {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.audit-card {
+  background: var(--bg-card);
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  border: 1px solid #13242f;
+}
+
+.audit-card h3 {
+  color: var(--text-muted);
+  margin-bottom: 15px;
+}
+
+.audit-card p {
+  font-size: 30px;
+  color: var(--neon);
+}
+
+.error {
+  color: #ff6b6b;
+  margin-top: 10px;
+}

@@ -1,0 +1,27 @@
+.alerts-container {
+  padding: 120px 10%;
+}
+
+.alerts-container h2 {
+  color: var(--neon);
+  margin-bottom: 30px;
+}
+
+.alert-card {
+  background: var(--bg-card);
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid #13242f;
+  margin-bottom: 15px;
+  color: #ff6b6b;
+}
+
+.empty-state {
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.error {
+  color: #ff6b6b;
+  margin-top: 10px;
+}

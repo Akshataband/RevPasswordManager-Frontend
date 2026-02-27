@@ -1,0 +1,36 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+
+    <h1>Welcome</h1>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+
+     <label for="username">Username or Email</label>
+<input
+  id="username"
+  type="text"
+  formControlName="username"
+  placeholder="Enter username or email"
+/>
+
+<label for="password">Master Password</label>
+<input
+  id="password"
+  type="password"
+  formControlName="masterPassword"
+  placeholder="Enter master password"
+/>
+      <div class="button-wrapper">
+        <button type="submit">Login</button>
+      </div>
+
+      <p class="error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </p>
+
+      <a routerLink="/register">Create account</a>
+
+    </form>
+
+  </div>
+</div>

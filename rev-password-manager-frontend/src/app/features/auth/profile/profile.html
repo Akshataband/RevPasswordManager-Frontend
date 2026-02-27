@@ -1,0 +1,49 @@
+<hr />
+
+<h3>Two-Factor Authentication</h3>
+
+<p *ngIf="twoFactorEnabled" class="enabled">
+  2FA is currently ENABLED
+</p>
+
+<p *ngIf="!twoFactorEnabled" class="disabled">
+  2FA is currently DISABLED
+</p>
+
+<!-- Enable Button -->
+<button *ngIf="!twoFactorEnabled"
+        (click)="startEnable()">
+  Enable 2FA
+</button>
+
+<!-- Disable Button -->
+<button *ngIf="twoFactorEnabled"
+        (click)="startDisable()">
+  Disable 2FA
+</button>
+
+<!-- Secret Display -->
+<div *ngIf="secret">
+  <p><strong>Secret:</strong> {{ secret }}</p>
+</div>
+
+<!-- OTP Input -->
+<div *ngIf="showOtpInput">
+  <input
+    type="text"
+    [(ngModel)]="otp"
+    placeholder="Enter 6-digit code"
+  />
+
+  <button *ngIf="enabling"
+          (click)="confirmEnable()">
+    Confirm Enable
+  </button>
+
+  <button *ngIf="!enabling"
+          (click)="confirmDisable()">
+    Confirm Disable
+  </button>
+</div>
+
+<p class="message">{{ message }}</p>

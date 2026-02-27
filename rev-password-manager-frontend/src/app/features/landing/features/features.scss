@@ -1,0 +1,27 @@
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px;
+}
+
+.feature-card {
+  background: var(--bg-card);
+  padding: 40px;
+  border-radius: 20px;
+  transition: 0.3s ease;
+  border: 1px solid #13242f;
+}
+
+.feature-card:hover {
+  box-shadow: 0 0 25px var(--neon-glow);
+  transform: translateY(-6px);
+}
+
+.feature-card h3 {
+  color: var(--neon);
+  margin-bottom: 15px;
+}
+
+.feature-card p {
+  color: var(--text-muted);
+}

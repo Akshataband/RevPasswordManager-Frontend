@@ -1,0 +1,59 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+
+    <h2>Two-Factor Authentication</h2>
+
+    <p *ngIf="twoFactorEnabled" class="enabled">
+      2FA is currently ENABLED
+    </p>
+
+    <p *ngIf="!twoFactorEnabled" class="disabled">
+      2FA is currently DISABLED
+    </p>
+
+    <!-- Enable Section -->
+    <div *ngIf="!twoFactorEnabled">
+
+      <button (click)="startEnable()" [disabled]="loading">
+        Enable 2FA
+      </button>
+
+      <div *ngIf="secret">
+
+        <p><strong>Secret:</strong> {{ secret }}</p>
+
+        <input
+          type="text"
+          [(ngModel)]="otp"
+          placeholder="Enter 6-digit code"
+          maxlength="6"
+        />
+
+        <button (click)="confirmEnable()" [disabled]="loading">
+          Confirm Enable
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- Disable Section -->
+    <div *ngIf="twoFactorEnabled">
+
+      <input
+        type="text"
+        [(ngModel)]="otp"
+        placeholder="Enter 6-digit code"
+        maxlength="6"
+      />
+
+      <button (click)="disable()" [disabled]="loading">
+        Disable 2FA
+      </button>
+
+    </div>
+
+    <p class="message">{{ message }}</p>
+
+  </div>
+</div>
