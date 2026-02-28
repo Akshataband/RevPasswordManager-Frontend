@@ -14,8 +14,13 @@ export class TwoFactor implements OnInit {
 
   isEnabled = false;
   isLoading = true;
+
   qrCode: string | null = null;
-  code = '';
+
+  confirmCode = '';   // used for enabling
+  disableCode = '';   // used for disabling
+
+  errorMessage = '';
 
   constructor(private auth: AuthService) {}
 
@@ -24,52 +29,73 @@ export class TwoFactor implements OnInit {
   }
 
   loadStatus() {
-  this.auth.get2FAStatus().subscribe({
-    next: (res: boolean) => {
-      console.log("2FA status:", res);
-      this.isEnabled = res;   
-      this.isLoading = false;
-    },
-    error: (err) => {
-      console.log("2FA status error:", err);
-      this.isLoading = false;
-    }
-  });
-}
+    this.isLoading = true;
 
-  // enable2FA() {
-  //   this.auth.enable2FA().subscribe({
-  //     next: (res: string) => {
-  //       console.log("QR:", res);
-  //       this.qrCode = res; // backend should return QR string
-  //     }
-  //   });
-  // }
+    this.auth.get2FAStatus().subscribe({
+      next: (res: boolean) => {
+        this.isEnabled = res;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
+  }
 
   enable2FA() {
-  this.auth.enable2FA().subscribe({
-    next: (res: any) => {
-      this.qrCode = res.qr;
-    }
-  });
-}
+    this.errorMessage = '';
 
-confirm2FA() {
-  this.auth.confirm2FA(this.code).subscribe({
-    next: () => {
-      this.loadStatus();  
-      this.qrCode = null;
-      this.code = '';
-    }
-  });
-}
+    this.auth.enable2FA().subscribe({
+      next: (res: any) => {
+        const otpUrl = res.qr;
 
-disable2FA() {
-  this.auth.disable2FA(this.code).subscribe({
-    next: () => {
-      this.loadStatus();   
-      this.code = '';
+        // Convert otpauth URL into real QR image
+        this.qrCode =
+          'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='
+          + encodeURIComponent(otpUrl);
+      },
+      error: () => {
+        this.errorMessage = 'Failed to generate QR code';
+      }
+    });
+  }
+
+  confirm2FA() {
+    if (!this.confirmCode.trim()) {
+      this.errorMessage = 'OTP is required';
+      return;
     }
-  });
-}
+
+    this.errorMessage = '';
+
+    this.auth.confirm2FA(this.confirmCode.trim()).subscribe({
+      next: () => {
+        this.qrCode = null;
+        this.confirmCode = '';
+        this.loadStatus();
+      },
+      error: (err) => {
+        this.errorMessage = 'Invalid or expired OTP';
+      }
+    });
+  }
+
+  disable2FA() {
+    if (!this.disableCode.trim()) {
+      this.errorMessage = 'OTP is required';
+      return;
+    }
+
+    this.errorMessage = '';
+
+    this.auth.disable2FA(this.disableCode.trim()).subscribe({
+      next: () => {
+        this.disableCode = '';
+        this.loadStatus();
+      },
+      error: () => {
+        this.errorMessage = 'Invalid OTP';
+      }
+    });
+  }
 }

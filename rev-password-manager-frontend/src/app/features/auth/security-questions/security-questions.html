@@ -1,36 +1,55 @@
 <div class="security-container">
 
-  <h2>Security Questions</h2>
+  <div class="security-wrapper">
 
-  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+    <h2>Security Questions</h2>
 
-  <div *ngIf="!loading">
+    <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 
-    <div *ngFor="let item of answers" class="question-card">
-      <p>{{ item.question }}</p>
+    <div *ngIf="!loading">
 
-      <input
-        type="text"
-        [(ngModel)]="item.answer"
-        placeholder="Enter new answer" />
+      <!-- QUESTIONS -->
+      <div *ngFor="let item of answers" class="question-card">
+
+        <label class="question-text">
+          {{ item.question }}
+        </label>
+
+        <input
+          type="text"
+          [(ngModel)]="item.answer"
+          placeholder="Enter new answer"
+        />
+
+      </div>
+
+      <!-- MASTER PASSWORD -->
+      <div class="confirm-section">
+        <input
+          type="password"
+          [(ngModel)]="masterPassword"
+          placeholder="Enter master password to confirm update"
+        />
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <div class="success" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
+      <!-- BUTTON -->
+      <button
+        class="btn-primary update-btn"
+        (click)="updateQuestions()"
+        [disabled]="loading">
+        Update Answers
+      </button>
+
     </div>
-
-    <input
-      type="password"
-      [(ngModel)]="masterPassword"
-      placeholder="Enter master password to confirm" />
-
-    <div class="error" *ngIf="errorMessage">
-      {{ errorMessage }}
-    </div>
-
-    <div class="success" *ngIf="successMessage">
-      {{ successMessage }}
-    </div>
-
-    <button class="btn-primary" (click)="updateQuestions()">
-      Update Answers
-    </button>
 
   </div>
 

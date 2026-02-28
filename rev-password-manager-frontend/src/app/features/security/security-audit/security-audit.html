@@ -1,47 +1,56 @@
 <div class="audit-container">
 
-  <h2>Security Audit</h2>
+  <div class="audit-wrapper">
 
-  <!-- INPUT SECTION -->
-  <div *ngIf="!auditStarted">
+    <h2>Security Audit</h2>
 
-    <input
-      type="password"
-      placeholder="Enter master password"
-      [(ngModel)]="masterPassword" />
+    <!-- INPUT SECTION -->
+    <div *ngIf="!auditStarted" class="input-section">
 
-    <div class="error" *ngIf="errorMessage">
-      {{ errorMessage }}
+      <div class="input-row">
+        <input
+          type="password"
+          placeholder="Enter master password"
+          [(ngModel)]="masterPassword" />
+
+        <button class="btn-primary" (click)="runAudit()">
+          Run Audit
+        </button>
+      </div>
+
+      <div class="error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
     </div>
 
-    <button class="btn-primary" (click)="runAudit()">
-      Run Audit
-    </button>
+    <!-- LOADING -->
+    <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 
-  </div>
+    <!-- RESULTS -->
+    <div *ngIf="report && !loading" class="audit-results">
 
-  <!-- LOADING -->
-  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+      <div class="audit-card">
+        <h3>Weak Passwords</h3>
+        <p>{{ report.weak }}</p>
+      </div>
 
-  <!-- RESULTS -->
-  <div *ngIf="report && !loading" class="audit-results">
+      <div class="audit-card">
+        <h3>Reused Passwords</h3>
+        <p>{{ report.reused }}</p>
+      </div>
 
-    <div class="audit-card">
-      <h3>Weak Passwords</h3>
-      <p>{{ report.weak }}</p>
+      <div class="audit-card">
+        <h3>Old Passwords</h3>
+        <p>{{ report.old }}</p>
+      </div>
+
     </div>
 
-    <div class="audit-card">
-      <h3>Reused Passwords</h3>
-      <p>{{ report.reused }}</p>
-    </div>
-
-    <div class="audit-card">
-      <h3>Old Passwords</h3>
-      <p>{{ report.old }}</p>
-    </div>
-
-    <button class="btn-outline" (click)="reset()">
+    <button
+      *ngIf="report && !loading"
+      class="btn-outline reset-btn"
+      (click)="reset()">
       Run Again
     </button>
 

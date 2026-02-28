@@ -63,27 +63,37 @@ export class VaultList implements OnInit {
   loadPasswords() {
     this.loading = true;
 
+    // FAVORITES MODE
     if (this.showFavorites) {
       this.auth.getFavorites().subscribe({
         next: (res: any[]) => {
           this.passwords = res || [];
+          this.totalPages = 0; // disable pagination
+          this.totalElements = this.passwords.length;
           this.loading = false;
         },
         error: () => {
           this.loading = false;
         }
       });
-      return; // IMPORTANT
+      return;
     }
 
-    const params = {
-      search: this.search || '',
-      category: this.category || '',
+    // NORMAL MODE
+    const params: any = {
       page: this.page,
       size: this.size,
       sortBy: this.sortBy,
       direction: this.direction
     };
+
+    if (this.search?.trim()) {
+      params.search = this.search.trim();
+    }
+
+    if (this.category?.trim()) {
+      params.category = this.category.trim();
+    }
 
     this.auth.searchVault(params).subscribe({
       next: (res: any) => {
@@ -97,6 +107,13 @@ export class VaultList implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  // ================= TOGGLE FAVORITES VIEW =================
+  toggleShowFavorites() {
+    this.showFavorites = !this.showFavorites;
+    this.page = 0;
+    this.loadPasswords();
   }
 
   applyFilters() {
@@ -114,7 +131,12 @@ export class VaultList implements OnInit {
     this.loadPasswords();
   }
 
+  // ================= TOGGLE FAVORITE =================
   toggleFavorite(item: any) {
+
+    if (item.loading) return;
+    item.loading = true;
+
     const request$ = item.favorite
       ? this.auth.removeFromFavorite(item.id)
       : this.auth.addToFavorite(item.id);
@@ -122,18 +144,17 @@ export class VaultList implements OnInit {
     request$.subscribe({
       next: () => {
         item.favorite = !item.favorite;
+        item.loading = false;
 
+        // If removing from favorites screen → remove from UI
         if (this.showFavorites && !item.favorite) {
           this.passwords = this.passwords.filter(p => p.id !== item.id);
         }
+      },
+      error: () => {
+        item.loading = false;
       }
     });
-  }
-
-  toggleShowFavorites() {
-    this.showFavorites = !this.showFavorites;
-    this.page = 0;
-    this.loadPasswords();
   }
 
   confirmDelete(id: number) {

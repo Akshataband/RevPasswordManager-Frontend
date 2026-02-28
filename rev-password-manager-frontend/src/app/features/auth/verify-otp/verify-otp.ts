@@ -26,13 +26,12 @@ export class VerifyOtp {
 
     const username = this.auth.getTempUsername();
 
-    // If page refreshed
     if (!username) {
       this.router.navigate(['/login']);
       return;
     }
 
-    if (!this.otp || this.otp.length !== 6) {
+    if (!this.otp || this.otp.trim().length !== 6) {
       this.errorMessage = 'Enter valid 6-digit OTP';
       return;
     }
@@ -42,7 +41,7 @@ export class VerifyOtp {
 
     this.auth.verify2FA({
       username: username,
-      otp: this.otp
+      otp: this.otp.trim()
     }).subscribe({
 
       next: (res: any) => {
@@ -59,12 +58,9 @@ export class VerifyOtp {
       },
 
       error: (err) => {
+        console.log(err);
         this.errorMessage =
           err.error?.message || 'Invalid or expired code';
-        this.loading = false;
-      },
-
-      complete: () => {
         this.loading = false;
       }
     });

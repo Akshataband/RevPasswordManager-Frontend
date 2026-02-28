@@ -1,42 +1,48 @@
 <div class="alerts-container">
 
-  <h2>Security Alerts</h2>
+  <div class="alerts-wrapper">
 
-  <!-- Input Section -->
-  <div *ngIf="!alertsLoaded">
+    <h2>Security Alerts</h2>
 
-    <input
-      type="password"
-      [(ngModel)]="masterPassword"
-      placeholder="Enter master password" />
+    <!-- Input Section -->
+    <div *ngIf="!alertsLoaded" class="input-section">
 
-    <div class="error" *ngIf="errorMessage">
-      {{ errorMessage }}
+      <div class="input-row">
+        <input
+          type="password"
+          [(ngModel)]="masterPassword"
+          placeholder="Enter master password" />
+
+        <button class="btn-primary" (click)="loadAlerts()">
+          Load Alerts
+        </button>
+      </div>
+
+      <div class="error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
     </div>
 
-    <button class="btn-primary" (click)="loadAlerts()">
-      Load Alerts
-    </button>
+    <!-- Spinner -->
+    <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 
-  </div>
+    <!-- Alerts List -->
+    <div *ngIf="alertsLoaded && !loading" class="alerts-list">
 
-  <!-- Spinner -->
-  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+      <div *ngIf="alerts.length === 0" class="empty-state">
+        No security alerts found.
+      </div>
 
-  <!-- Alerts List -->
-  <div *ngIf="alertsLoaded && !loading">
+      <div *ngFor="let alert of alerts" class="alert-card">
+        {{ alert }}
+      </div>
 
-    <div *ngIf="alerts.length === 0" class="empty-state">
-      No security alerts found.
+      <button class="btn-outline reset-btn" (click)="reset()">
+        Check Again
+      </button>
+
     </div>
-
-    <div *ngFor="let alert of alerts" class="alert-card">
-      {{ alert }}
-    </div>
-
-    <button class="btn-outline" (click)="reset()">
-      Check Again
-    </button>
 
   </div>
 

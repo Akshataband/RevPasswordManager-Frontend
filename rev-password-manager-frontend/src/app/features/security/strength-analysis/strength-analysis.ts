@@ -14,11 +14,11 @@ export class StrengthAnalysis {
 
   password = '';
   strength = '';
+  showPassword = false;
 
   constructor(private auth: AuthService) {}
 
   checkStrength() {
-
     if (!this.password.trim()) return;
 
     this.auth.checkPasswordStrength(this.password)

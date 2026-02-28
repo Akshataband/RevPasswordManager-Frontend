@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -11,35 +11,49 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './layout.html',
   styleUrls: ['./layout.scss']
 })
-export class Layout {
+export class Layout implements OnInit {
+
+  username: string = '';
 
   constructor(
     private router: Router,
     private auth: AuthService
   ) {}
 
-  logout() {
-
-  const token = this.auth.getToken();
-
-  // If no token, just redirect
-  if (!token) {
-    this.router.navigate(['/login']);
-    return;
+  ngOnInit() {
+    this.loadUsername();
   }
 
-  this.auth.logout().subscribe({
-    next: () => {
-      this.auth.clearToken();
-      this.auth.clearTempUsername();
+  loadUsername() {
+    const token = this.auth.getToken();
+
+    if (!token) return;
+
+    // Decode JWT
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    this.username = payload.sub;  // usually username stored in sub
+  }
+
+  logout() {
+
+    const token = this.auth.getToken();
+
+    if (!token) {
       this.router.navigate(['/login']);
-    },
-    error: () => {
-      // Even if backend fails, force logout locally
-      this.auth.clearToken();
-      this.auth.clearTempUsername();
-      this.router.navigate(['/']);
+      return;
     }
-  });
-}
+
+    this.auth.logout().subscribe({
+      next: () => {
+        this.auth.clearToken();
+        this.auth.clearTempUsername();
+        this.router.navigate(['/login']);
+      },
+      error: () => {
+        this.auth.clearToken();
+        this.auth.clearTempUsername();
+        this.router.navigate(['/']);
+      }
+    });
+  }
 }

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   FormBuilder,
   Validators,
@@ -17,85 +18,58 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class ChangePassword {
 
-  verifyForm: FormGroup;
-  resetForm: FormGroup;
-
-  step = 1;
+  form: FormGroup;
   loading = false;
   message = '';
+  errorMessage = '';
+
+  showCurrent = false;
+  showNew = false;
+  showConfirm = false;
 
   constructor(
     private fb: FormBuilder,
     private auth: AuthService
   ) {
-
-    this.verifyForm = this.fb.group({
-      username: ['', Validators.required],
-      answer: ['', Validators.required]
-    });
-
-    this.resetForm = this.fb.group({
-      username: ['', Validators.required],
-      currentMasterPassword: ['', Validators.required],
-      newMasterPassword: ['', [Validators.required, Validators.minLength(8)]]
+    this.form = this.fb.group({
+      currentPassword: ['', Validators.required],
+      newPassword: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', Validators.required]
     });
   }
 
-  // ================= STEP 1 =================
+  submit() {
 
-  verifyAnswer() {
+    this.message = '';
+    this.errorMessage = '';
 
-    if (this.verifyForm.invalid) {
-      this.verifyForm.markAllAsTouched();
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    if (this.form.value.newPassword !== this.form.value.confirmPassword) {
+      this.errorMessage = 'Passwords do not match';
       return;
     }
 
     this.loading = true;
-    this.message = '';
 
-    this.auth.verifySecurityAnswer(this.verifyForm.value)
-      .subscribe({
-        next: () => {
-
-          this.step = 2;
-
-          this.resetForm.patchValue({
-            username: this.verifyForm.value.username
-          });
-        },
-        error: () => {
-          this.message = 'Incorrect security answer';
-          this.loading = false;
-        },
-        complete: () => this.loading = false
-      });
-  }
-
-  // ================= STEP 2 =================
-
-  resetPassword() {
-
-    if (this.resetForm.invalid) {
-      this.resetForm.markAllAsTouched();
-      return;
-    }
-
-    this.loading = true;
-    this.message = '';
-
-    this.auth.resetMasterPassword(this.resetForm.value)
-      .subscribe({
-        next: () => {
-          this.message = 'Master password changed successfully';
-          this.step = 1;
-          this.verifyForm.reset();
-          this.resetForm.reset();
-        },
-        error: () => {
-          this.message = 'Password reset failed';
-          this.loading = false;
-        },
-        complete: () => this.loading = false
-      });
+    this.auth.changeMasterPassword({
+      oldPassword: this.form.value.currentPassword,
+      newPassword: this.form.value.newPassword
+    })
+    .subscribe({
+      next: () => {
+        this.message = 'Master password changed successfully';
+        this.form.reset();
+      },
+      error: (err: HttpErrorResponse) => {
+        this.errorMessage =
+          err.error?.message || 'Failed to change password';
+        this.loading = false;
+      },
+      complete: () => this.loading = false
+    });
   }
 }

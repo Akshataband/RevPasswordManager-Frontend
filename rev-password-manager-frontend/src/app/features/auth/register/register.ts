@@ -29,12 +29,14 @@ export class Register {
   loading = false;
   errorMessage = '';
 
+  showPassword = false;
+  showConfirmPassword = false;
+
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router
   ) {
-
     this.form = this.fb.group({
       name: ['', Validators.required],
       username: ['', Validators.required],
@@ -49,6 +51,7 @@ export class Register {
     });
   }
 
+  // Getter for form array
   get securityAnswers(): FormArray {
     return this.form.get('securityAnswers') as FormArray;
   }

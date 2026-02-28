@@ -28,53 +28,54 @@ export class ViewSecurityQuestions implements OnInit {
   }
 
   loadQuestions() {
-    this.loading = true;
+  this.loading = true;
 
-    this.service.getQuestions().subscribe({
-      next: (res: any) => {
-        this.questions = res || [];
-        this.answers = this.questions.map(q => ({
-          question: q,
-          answer: ''
-        }));
-        this.loading = false;
-      },
-      error: () => this.loading = false
-    });
+  // Fixed questions (same as registration)
+  this.questions = [
+    'What is your first school name?',
+    'What is your mother’s maiden name?',
+    'What was your childhood nickname?'
+  ];
+
+  this.answers = this.questions.map(q => ({
+    question: q,
+    answer: ''
+  }));
+
+  this.loading = false;
+}
+
+ updateQuestions() {
+
+  this.errorMessage = '';
+  this.successMessage = '';
+
+  if (!this.masterPassword.trim()) {
+    this.errorMessage = 'Master password is required';
+    return;
   }
 
-  updateQuestions() {
-
-    if (!this.masterPassword) {
-      this.errorMessage = 'Master password is required';
-      return;
-    }
-
-    const filledAnswers = this.answers.filter(a => a.answer.trim() !== '');
-
-    if (filledAnswers.length < 3) {
-      this.errorMessage = 'Minimum 3 answers required';
-      return;
-    }
-
-    this.loading = true;
-    this.errorMessage = '';
-    this.successMessage = '';
-
-    this.service.updateSecurityQuestions({
-  masterPassword: this.masterPassword,
-  securityAnswers: filledAnswers
-}).subscribe({
-      next: () => {
-        this.successMessage = 'Security questions updated successfully';
-        this.masterPassword = '';
-        this.answers.forEach(a => a.answer = '');
-        this.loading = false;
-      },
-      error: () => {
-        this.errorMessage = 'Update failed';
-        this.loading = false;
-      }
-    });
+  if (this.answers.some(a => !a.answer.trim())) {
+    this.errorMessage = 'All 3 answers are required';
+    return;
   }
+
+  this.loading = true;
+
+  this.service.updateSecurityQuestions({
+    masterPassword: this.masterPassword,
+    questions: this.answers
+  }).subscribe({
+    next: () => {
+      this.successMessage = 'Security questions updated successfully';
+      this.masterPassword = '';
+      this.answers.forEach(a => a.answer = '');
+      this.loading = false;
+    },
+    error: () => {
+      this.errorMessage = 'Update failed';
+      this.loading = false;
+    }
+  });
+}
 }

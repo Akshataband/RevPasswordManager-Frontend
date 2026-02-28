@@ -10,28 +10,32 @@
       (input)="applyFilters()" />
 
     <label for="categorySelect">Category</label>
-<select
-  id="categorySelect"
-  [(ngModel)]="category">
-  <option value="">All</option>
-  <option *ngFor="let c of categories" [value]="c">
-    {{ c }}
-  </option>
-</select>
 
-    <button (click)="changeSort('accountName')">
+    <select
+      id="categorySelect"
+      [(ngModel)]="category"
+      (change)="applyFilters()">
+
+      <option value="">All</option>
+      <option *ngFor="let c of categories" [value]="c">
+        {{ c }}
+      </option>
+
+    </select>
+
+    <button type="button" (click)="changeSort('accountName')">
       Sort by Name
     </button>
 
-    <button (click)="changeSort('createdAt')">
+    <button type="button" (click)="changeSort('createdAt')">
       Sort by Created
     </button>
 
-    <button (click)="goToAdd()">
+    <button type="button" (click)="goToAdd()">
       Add Password
     </button>
 
-    <button (click)="toggleShowFavorites()">
+    <button type="button" (click)="toggleShowFavorites()">
       {{ showFavorites ? 'Show All' : 'Show Favorites' }}
     </button>
 
@@ -59,12 +63,18 @@
 
       <div class="card-actions">
 
-        <button (click)="viewPassword(p.id)">View</button>
-        <button (click)="editPassword(p.id)">Edit</button>
-        <button (click)="confirmDelete(p.id)">Delete</button>
+        <button type="button" (click)="viewPassword(p.id)">View</button>
+        <button type="button" (click)="editPassword(p.id)">Edit</button>
+        <button type="button" (click)="confirmDelete(p.id)">Delete</button>
 
-        <button (click)="toggleFavorite(p)">
+        <button
+          type="button"
+          class="favorite-btn"
+          [class.active]="p.favorite"
+          (click)="toggleFavorite(p)">
+
           {{ p.favorite ? '★' : '☆' }}
+
         </button>
 
       </div>
@@ -75,9 +85,10 @@
 
   <!-- PAGINATION -->
   <div class="pagination" *ngIf="totalPages > 1">
-    <button (click)="prevPage()" [disabled]="page === 0">Prev</button>
+    <button type="button" (click)="prevPage()" [disabled]="page === 0">Prev</button>
 
     <button
+      type="button"
       *ngFor="let p of pageNumbers"
       (click)="goToPage(p)"
       [class.active]="page === p">
@@ -85,6 +96,7 @@
     </button>
 
     <button
+      type="button"
       (click)="nextPage()"
       [disabled]="page === totalPages - 1">
       Next
@@ -93,7 +105,6 @@
 
 </div>
 
-<!-- DELETE MODAL -->
 <app-confirm-dialog
   *ngIf="deleteId"
   [message]="'Are you sure you want to delete this password?'"
@@ -101,7 +112,6 @@
   (onCancel)="deleteId = null">
 </app-confirm-dialog>
 
-<!-- VIEW PASSWORD MODAL -->
 <app-view-password-modal
   *ngIf="selectedId !== null"
   [passwordId]="selectedId"

@@ -10,7 +10,36 @@ export class AuthService {
   private api = 'http://localhost:8080';
 
   constructor(private http: HttpClient) {}
+// ================= PROFILE =================
 
+  getProfile() {
+    return this.http.get(`${this.api}/auth/me`);
+  }
+  getCurrentUser() {
+  return this.http.get(`${this.api}/auth/me`);
+}
+
+getUsernameFromToken(): string {
+
+  const token = localStorage.getItem('token');
+  if (!token) return '';
+
+  const payload = JSON.parse(atob(token.split('.')[1]));
+  return payload.sub;   // 'sub' usually contains username
+}
+
+// ================= MASTER PASSWORD =================
+
+changeMasterPassword(data: {
+  oldPassword: string;
+  newPassword: string;
+}) {
+  return this.http.put(
+    `${this.api}/auth/change-master-password`,
+    data,
+    { responseType: 'text' }
+  );
+}
   // ================= TOKEN STORAGE =================
 
   private TOKEN_KEY = 'rev_token';
@@ -45,11 +74,16 @@ export class AuthService {
   }
 
   // ================= SECURITY QUESTIONS =================
-
 updateSecurityQuestions(data: any) {
   return this.http.put(
     `${this.api}/api/security-questions`,
-    data
+    data,
+    { responseType: 'text' }
+  );
+}
+getSecurityQuestions(username: string) {
+  return this.http.get<string[]>(
+    `${this.api}/auth/security-questions/${username}`
   );
 }
 
@@ -63,10 +97,15 @@ updateSecurityQuestions(data: any) {
     return this.http.post(`${this.api}/auth/login`, data);
   }
 
-  verify2FA(data: any): Observable<any> {
-    return this.http.post(`${this.api}/auth/verify-2fa`, data);
-  }
-
+  verify2FA(data: { username: string; otp: string }) {
+  return this.http.post(
+    `${this.api}/auth/verify-2fa`,
+    data,
+    {
+      headers: { 'Content-Type': 'application/json' }
+    }
+  );
+}
   logout(): Observable<any> {
     return this.http.post(`${this.api}/auth/logout`, {}).pipe(
       tap(() => {
@@ -75,6 +114,12 @@ updateSecurityQuestions(data: any) {
       })
     );
   }
+  forgotPassword(data: any) {
+  return this.http.post(
+    `${this.api}/auth/forgot-password`,
+    data
+  );
+}
 
   // ================= PROFILE =================
 

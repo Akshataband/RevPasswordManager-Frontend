@@ -30,22 +30,33 @@
       />
 
       <!-- PASSWORD -->
-      <label for="reg-pass">Master Password</label>
-      <input
-        id="reg-pass"
-        type="password"
-        formControlName="masterPassword"
-        placeholder="Enter master password"
-      />
+      <!-- PASSWORD -->
+<label for="reg-pass">Master Password</label>
+<div class="password-wrapper">
+  <input
+    id="reg-pass"
+    [type]="showPassword ? 'text' : 'password'"
+    formControlName="masterPassword"
+    placeholder="Enter master password"
+  />
+  <span class="eye" (click)="showPassword = !showPassword">
+    {{ showPassword ? '🙈' : '👁️' }}
+  </span>
+</div>
 
-      <!-- CONFIRM -->
-      <label for="reg-confirm">Confirm Password</label>
-      <input
-        id="reg-confirm"
-        type="password"
-        formControlName="confirmPassword"
-        placeholder="Confirm password"
-      />
+<!-- CONFIRM -->
+<label for="reg-confirm">Confirm Password</label>
+<div class="password-wrapper">
+  <input
+    id="reg-confirm"
+    [type]="showConfirmPassword ? 'text' : 'password'"
+    formControlName="confirmPassword"
+    placeholder="Confirm password"
+  />
+  <span class="eye" (click)="showConfirmPassword = !showConfirmPassword">
+    {{ showConfirmPassword ? '🙈' : '👁️' }}
+  </span>
+</div>
 
       <h3 style="color: var(--text-muted); margin-top: 20px;">
         Security Questions

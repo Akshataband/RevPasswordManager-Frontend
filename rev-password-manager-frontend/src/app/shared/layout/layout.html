@@ -1,16 +1,20 @@
 <div class="layout">
 
-  <aside class="sidebar">
+<aside class="sidebar">
 
-    <div>
-      <h2 class="logo">RevPasswordManager</h2>
+  <div>
 
-      <!-- MAIN -->
-      <p class="menu-title">Main</p>
+    <!-- LOGO -->
+    <div class="logo-wrapper">
+      <img src="assets/logo3.png" alt="Rev Logo" class="logo-img">
+    </div>
 
-      <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
-        Dashboard
-      </a>
+    <!-- MAIN -->
+    <p class="menu-title">Main</p>
+
+    <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
+      Dashboard
+    </a>
 
       <a routerLink="/profile" routerLinkActive="active" class="nav-link">
         Profile
@@ -68,7 +72,7 @@
 
   <div class="main-wrapper">
     <header class="topbar">
-      <h3>Welcome to RevVault</h3>
+      <h3>Welcome {{ username }}</h3>
     </header>
 
     <main class="content">

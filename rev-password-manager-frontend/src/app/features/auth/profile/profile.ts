@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
 import {
   FormBuilder,
   Validators,
@@ -9,7 +8,6 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
-
 
 @Component({
   selector: 'app-profile',
@@ -24,12 +22,7 @@ export class Profile implements OnInit {
 
   loading = false;
   message = '';
-
-  twoFactorEnabled = false;
-  secret = '';
-  otp = '';
-  showOtpInput = false;
-  enabling = false;
+  user: any;
 
   constructor(
     private fb: FormBuilder,
@@ -43,7 +36,31 @@ export class Profile implements OnInit {
   }
 
   ngOnInit() {
-    this.load2FAStatus();
+    this.loadUserProfile();
+  }
+
+  // ================= LOAD USER =================
+
+  loadUserProfile() {
+    this.loading = true;
+
+    this.auth.getCurrentUser().subscribe({
+      next: (res: any) => {
+        this.user = res;
+
+        // Patch values into form
+        this.form.patchValue({
+          name: res.name,
+          email: res.email,
+          phoneNumber: res.phoneNumber
+        });
+
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+      }
+    });
   }
 
   // ================= PROFILE UPDATE =================
@@ -58,68 +75,14 @@ export class Profile implements OnInit {
     this.loading = true;
 
     this.auth.updateProfile(this.form.value).subscribe({
-      next: () => this.message = 'Profile updated successfully',
-      error: () => this.message = 'Update failed',
-      complete: () => this.loading = false
-    });
-  }
-
-  // ================= LOAD 2FA STATUS =================
-
-  load2FAStatus() {
-    this.auth.get2FAStatus().subscribe({
-      next: (res: any) => {
-  this.twoFactorEnabled = res.enabled;
-}
-    });
-  }
-
-  // ================= ENABLE FLOW =================
-
-  startEnable() {
-    this.enabling = true;
-
-    this.auth.enable2FA().subscribe({
-      next: (secret) => {
-        this.secret = secret;
-        this.showOtpInput = true;
-        this.message = 'Scan this secret in your authenticator app';
+      next: () => {
+        this.message = 'Profile updated successfully';
+        this.loading = false;
+      },
+      error: () => {
+        this.message = 'Update failed';
+        this.loading = false;
       }
     });
-  }
-
-  confirmEnable() {
-    this.auth.confirm2FA(this.otp).subscribe({
-      next: () => {
-        this.message = '2FA Enabled Successfully';
-        this.reset2FAState();
-        this.load2FAStatus();
-      },
-      error: () => this.message = 'Invalid OTP'
-    });
-  }
-
-  // ================= DISABLE FLOW =================
-
-  startDisable() {
-    this.enabling = false;
-    this.showOtpInput = true;
-  }
-
-  confirmDisable() {
-    this.auth.disable2FA(this.otp).subscribe({
-      next: () => {
-        this.message = '2FA Disabled Successfully';
-        this.reset2FAState();
-        this.load2FAStatus();
-      },
-      error: () => this.message = 'Invalid OTP'
-    });
-  }
-
-  private reset2FAState() {
-    this.secret = '';
-    this.otp = '';
-    this.showOtpInput = false;
   }
 }

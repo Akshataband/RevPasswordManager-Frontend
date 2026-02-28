@@ -22,14 +22,14 @@ import { ViewSecurityQuestions } from './features/auth/security-questions/securi
 
 export const routes: Routes = [
 
-  // 🌍 Public
+  // Public
   { path: '', loadComponent: () => import('./features/landing/landing/landing').then(m => m.Landing) },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
   { path: 'verify-2fa', component: VerifyOtp },
   { path: 'forgot-password', component: ForgotPassword },
 
-  // 🔐 Protected
+  // Protected
   {
     path: '',
     component: Layout,

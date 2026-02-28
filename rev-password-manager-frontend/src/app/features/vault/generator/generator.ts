@@ -25,7 +25,8 @@ passwords: { password: string; strength: string }[] = [];
       includeUppercase: [true],
       includeLowercase: [true],
       includeNumbers: [true],
-      includeSpecial: [true]
+      includeSpecial: [true],
+      excludeSimilar: [false] 
     });
   }
 

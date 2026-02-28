@@ -2,24 +2,20 @@
   display: flex;
   min-height: 100vh;
   background: var(--bg-dark);
-  color: var(--text-light);
 }
 
-/* ================= SIDEBAR ================= */
-
+/* SIDEBAR */
 .sidebar {
-  width: 260px;
-  background: #0c1822;
+  width: 250px;
+  background: #0b1720;
   padding: 30px 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border-right: 1px solid #132533;
+  border-right: 1px solid #1f2e38;
 }
 
 .logo {
-  font-size: 22px;
-  font-weight: 600;
   color: var(--neon);
   margin-bottom: 30px;
 }
@@ -27,76 +23,68 @@
 .menu-title {
   font-size: 12px;
   color: var(--text-muted);
-  margin: 20px 0 10px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  margin-top: 25px;
+  margin-bottom: 8px;
 }
 
 .nav-link {
   display: block;
-  padding: 10px 14px;
-  border-radius: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
   text-decoration: none;
-  color: var(--text-light);
+  color: white;
   font-size: 14px;
-  transition: 0.3s ease;
   margin-bottom: 5px;
+  transition: 0.2s;
 }
 
 .nav-link:hover {
-  background: #112532;
-  color: var(--neon);
+  background: #13232e;
 }
 
 .nav-link.active {
-  background: rgba(0, 255, 204, 0.1);
-  color: var(--neon);
-  box-shadow: 0 0 10px var(--neon-glow);
+  background: var(--neon);
+  color: black;
 }
-
-/* ================= LOGOUT BUTTON ================= */
 
 .logout-btn {
-  margin-top: 30px;
+  background: #ff4d4d;
+  border: none;
   padding: 10px;
-  border-radius: 12px;
-  border: 1px solid var(--neon);
-  background: transparent;
-  color: var(--neon);
+  border-radius: 8px;
   cursor: pointer;
-  transition: 0.3s ease;
+  color: white;
 }
 
-.logout-btn:hover {
-  background: var(--neon);
-  color: #000;
-  box-shadow: 0 0 15px var(--neon-glow);
-}
-
-/* ================= MAIN AREA ================= */
-
+/* MAIN WRAPPER */
 .main-wrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-/* Top bar */
-
+/* TOPBAR */
 .topbar {
-  padding: 20px 40px;
-  border-bottom: 1px solid #132533;
+  padding: 20px 30px;
+  border-bottom: 1px solid #1f2e38;
   background: #0f1c24;
 }
 
-.topbar h3 {
-  font-weight: 500;
+/* CONTENT */
+.content {
+  padding: 30px;
+  flex: 1;
 }
 
-/* Content */
+.logo-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // padding: 10px 0 20px 0;
+}
 
-.content {
-  padding: 40px;
-  flex: 1;
-  overflow-y: auto;
+.logo-img {
+  width: 100px;     
+  height: auto;
+  object-fit: contain;
 }

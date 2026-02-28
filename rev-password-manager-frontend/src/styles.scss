@@ -7,21 +7,37 @@
   --text-muted: #8aa4b2;
 }
 
-/* Reset */
+/* ================= RESET ================= */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: 'Segoe UI', sans-serif;
+  pointer-events: auto;
 }
 
 body {
   min-height: 100vh;
-  background: #08121a;
+  background: var(--bg-dark);
   color: var(--text-light);
 }
 
-/* Center wrapper */
+/* ================= LAYOUT FIX ================= */
+/* Prevent navbar overlap */
+app-navbar {
+  display: block;
+  width: 100%;
+}
+
+/* Wrap router-outlet inside this div */
+.main-content {
+  padding: 90px 40px 40px 40px;
+  min-height: 100vh;
+}
+
+/* ================= AUTH PAGES ================= */
+
 .auth-wrapper {
   min-height: 100vh;
   display: flex;
@@ -30,7 +46,6 @@ body {
   padding: 30px;
 }
 
-/* Card */
 .auth-card {
   width: 100%;
   max-width: 520px;
@@ -41,7 +56,6 @@ body {
   animation: fadeIn 0.4s ease;
 }
 
-/* Title */
 .auth-card h1 {
   text-align: center;
   font-size: 30px;
@@ -50,7 +64,6 @@ body {
   font-weight: 600;
 }
 
-/* Labels */
 .auth-card label {
   display: block;
   margin-bottom: 8px;
@@ -58,7 +71,6 @@ body {
   font-size: 14px;
 }
 
-/* Inputs */
 .auth-card input,
 .auth-card textarea {
   width: 100%;
@@ -79,7 +91,6 @@ body {
   box-shadow: 0 0 12px var(--neon-glow);
 }
 
-/* Button */
 .auth-card button {
   padding: 12px 22px;
   border-radius: 14px;
@@ -97,7 +108,6 @@ body {
               0 0 30px var(--neon-glow);
 }
 
-/* Error */
 .error {
   color: #ff6b6b;
   font-size: 13px;
@@ -105,25 +115,7 @@ body {
   text-align: center;
 }
 
-/* Animation */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.section {
-  padding: 100px 10%;
-}
-
-.container {
-  max-width: 1200px;
-  margin: auto;
-}
+/* ================= COMMON BUTTONS ================= */
 
 .btn-primary {
   background: var(--neon);
@@ -156,13 +148,68 @@ body {
   color: black;
 }
 
+/* ================= ANIMATION ================= */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// .fade-in {
+//   opacity: 0;
+//   transform: translateY(40px);
+//   transition: all 0.8s ease;
+//   pointer-events: none;   
+// }
+
+// .fade-in.visible {
+//   opacity: 1;
+//   transform: translateY(0);
+//   pointer-events: auto;  
+// }
+/* ================= GLOBAL LAYOUT FIX ================= */
+
+app-layout,
+router-outlet {
+  display: block;
+}
+
+.main-layout-content {
+  padding-top: 90px;
+}
+
+button {
+  cursor: pointer;
+}
+
 .fade-in {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: all 0.8s ease;
+  pointer-events: none !important;
 }
 
 .fade-in.visible {
-  opacity: 1;
-  transform: translateY(0);
+  pointer-events: auto !important;
+}
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.eye {
+  position: absolute;
+  right: 15px;
+  bottom: 32px;
+  cursor: pointer;
+  font-size: 16px;
 }
