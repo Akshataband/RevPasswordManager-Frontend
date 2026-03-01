@@ -133,6 +133,23 @@ app-navbar {
               0 0 40px var(--neon-glow);
 }
 
+// .btn-outline {
+//   background: transparent;
+//   color: var(--neon);
+//   border: 1px solid var(--neon);
+//   padding: 14px 28px;
+//   border-radius: 14px;
+//   cursor: pointer;
+//   transition: 0.3s ease;
+// }
+
+// .btn-outline:hover {
+//   background: var(--neon);
+//   color: black;
+// }
+
+/* ================= UPDATED OUTLINE BUTTON ================= */
+
 .btn-outline {
   background: transparent;
   color: var(--neon);
@@ -144,8 +161,10 @@ app-navbar {
 }
 
 .btn-outline:hover {
-  background: var(--neon);
-  color: black;
+  background: transparent; 
+  color: var(--neon);
+  box-shadow: 0 0 20px var(--neon),
+              0 0 40px var(--neon-glow);
 }
 
 /* ================= ANIMATION ================= */
@@ -161,20 +180,6 @@ app-navbar {
   }
 }
 
-// .fade-in {
-//   opacity: 0;
-//   transform: translateY(40px);
-//   transition: all 0.8s ease;
-//   pointer-events: none;   
-// }
-
-// .fade-in.visible {
-//   opacity: 1;
-//   transform: translateY(0);
-//   pointer-events: auto;  
-// }
-/* ================= GLOBAL LAYOUT FIX ================= */
-
 app-layout,
 router-outlet {
   display: block;
@@ -189,27 +194,36 @@ button {
 }
 
 .fade-in {
-  pointer-events: none !important;
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s ease;
 }
 
 .fade-in.visible {
-  pointer-events: auto !important;
+  opacity: 1;
+  transform: translateY(0);
 }
+
+
 .password-wrapper {
   position: relative;
-  display: flex;
-  align-items: center;
+  width: 100%;
 }
 
 .password-wrapper input {
   width: 100%;
-  padding-right: 40px;
+  padding-right: 45px;
 }
 
-.eye {
+.password-wrapper span {
   position: absolute;
   right: 15px;
-  bottom: 32px;
+  top: 34%;
+  transform: translateY(-50%);
   cursor: pointer;
   font-size: 16px;
+}
+
+.auth-card button {
+  width: 100%;
 }

@@ -1,9 +1,8 @@
 .hero {
-  padding: 120px 0 80px 0;
+  padding: 140px 0 100px 0;
 }
 
 .container {
-  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 40px;
@@ -53,24 +52,4 @@
   border-radius: 30px;
   background: linear-gradient(145deg, #0f1c24, #08121a);
   box-shadow: 0 0 80px var(--neon-glow);
-}
-
-/* RESPONSIVE */
-@media (max-width: 900px) {
-  .hero {
-    padding-top: 100px;
-  }
-
-  .hero-content {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .left p {
-    margin: 0 auto 30px auto;
-  }
-
-  .right {
-    margin-top: 40px;
-  }
 }

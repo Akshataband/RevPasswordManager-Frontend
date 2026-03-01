@@ -23,10 +23,16 @@ export class ForgotPassword {
   errorMessage = '';
   successMessage = '';
 
-  questions: string[] = [];
+  // ✅ Fixed security questions
+  questions: string[] = [
+    "What is your mother's maiden name?",
+    "What was your first school name?",
+    "What is your favorite childhood friend name?"
+  ];
 
   showNew = false;
   showConfirm = false;
+  showAnswer = false;
 
   constructor(
     private fb: FormBuilder,
@@ -41,23 +47,6 @@ export class ForgotPassword {
       newPassword: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', Validators.required]
     });
-  }
-
-  // 🔹 Load security questions
-  loadQuestions() {
-
-    const username = this.form.value.username;
-    if (!username) return;
-
-    this.auth.getSecurityQuestions(username)
-      .subscribe({
-        next: (res: string[]) => {
-          this.questions = res;
-        },
-        error: () => {
-          this.errorMessage = 'User not found';
-        }
-      });
   }
 
   submit() {
@@ -78,14 +67,15 @@ export class ForgotPassword {
     this.loading = true;
 
     this.auth.forgotPassword({
-      username: this.form.value.username,
+      username: this.form.value.username.trim(),
       question: this.form.value.question,
       answer: this.form.value.answer,
       newPassword: this.form.value.newPassword
     })
     .subscribe({
-      next: () => {
-        this.successMessage = 'Password reset successful';
+      next: (response: string) => {
+        this.successMessage = response || 'Password reset successful';
+        this.loading = false;
 
         setTimeout(() => {
           this.router.navigate(['/login']);
@@ -95,8 +85,7 @@ export class ForgotPassword {
         this.errorMessage =
           err.error?.message || 'Reset failed';
         this.loading = false;
-      },
-      complete: () => this.loading = false
+      }
     });
   }
 }

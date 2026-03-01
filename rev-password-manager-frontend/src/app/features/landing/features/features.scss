@@ -1,6 +1,14 @@
+.section {
+  padding: 100px 0;
+}
+
 .features-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
   gap: 40px;
 }
 
@@ -8,8 +16,14 @@
   background: var(--bg-card);
   padding: 40px;
   border-radius: 20px;
-  transition: 0.3s ease;
   border: 1px solid #13242f;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  min-height: 200px;
+  transition: 0.3s ease;
 }
 
 .feature-card:hover {

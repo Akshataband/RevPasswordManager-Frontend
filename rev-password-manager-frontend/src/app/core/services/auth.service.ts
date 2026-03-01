@@ -114,10 +114,11 @@ getSecurityQuestions(username: string) {
       })
     );
   }
-  forgotPassword(data: any) {
+forgotPassword(data: any) {
   return this.http.post(
     `${this.api}/auth/forgot-password`,
-    data
+    data,
+    { responseType: 'text' }
   );
 }
 

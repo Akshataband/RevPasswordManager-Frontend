@@ -58,39 +58,46 @@ export class Register {
 
   submit() {
 
-    this.errorMessage = '';
+  this.errorMessage = '';
 
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    if (this.form.value.masterPassword !== this.form.value.confirmPassword) {
-      this.errorMessage = 'Passwords do not match';
-      return;
-    }
-
-    this.loading = true;
-
-    const payload = {
-      name: this.form.value.name,
-      email: this.form.value.email,
-      username: this.form.value.username,
-      masterPassword: this.form.value.masterPassword,
-      securityAnswers: this.form.value.securityAnswers
-    };
-
-    this.auth.register(payload).subscribe({
-      next: () => {
-        alert('Registration successful. Please login.');
-        this.router.navigate(['/login']);
-      },
-      error: (err: any) => {
-        this.errorMessage =
-          err.error?.message || 'Registration failed';
-        this.loading = false;
-      },
-      complete: () => this.loading = false
-    });
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
   }
-}
+
+  if (this.form.value.masterPassword !== this.form.value.confirmPassword) {
+    this.errorMessage = 'Passwords do not match';
+    return;
+  }
+
+  this.loading = true;
+
+  // Convert answers into QuestionAnswer format
+  const formattedSecurityAnswers = this.fixedQuestions.map(
+    (question, index) => ({
+      question: question,
+      answer: this.securityAnswers.at(index).value
+    })
+  );
+
+  const payload = {
+    name: this.form.value.name,
+    email: this.form.value.email,
+    username: this.form.value.username,
+    masterPassword: this.form.value.masterPassword,
+    securityAnswers: formattedSecurityAnswers
+  };
+
+  this.auth.register(payload).subscribe({
+    next: () => {
+      alert('Registration successful. Please login.');
+      this.router.navigate(['/login']);
+    },
+    error: (err: any) => {
+      this.errorMessage =
+        err.error?.message || 'Registration failed';
+      this.loading = false;
+    },
+    complete: () => this.loading = false
+  });
+}}
