@@ -1,4 +1,5 @@
 RevPasswordManager Frontend
+
 A secure Angular application for managing encrypted passwords.
 This frontend connects with the Spring Boot backend and provides authentication, vault management, password generation, security audit, and encrypted backup features using JWT-based security and OTP verification.
 
