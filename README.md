@@ -215,5 +215,3 @@ OTP format validation
 Snackbar notifications
 
 Loading indicators during API calls
-
-If you want, I can now also convert your backend README into bullet format the same way for consistency.
