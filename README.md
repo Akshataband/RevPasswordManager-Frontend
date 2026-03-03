@@ -87,3 +87,71 @@ This frontend communicates with the Spring Boot backend and provides authenticat
 ---
 
 ## Project Structure
+
+src/app
+├── core
+│ ├── services
+│ ├── interceptors
+│ └── guards
+├── features
+│ ├── auth
+│ ├── dashboard
+│ ├── vault
+│ ├── generator
+│ ├── security
+│ └── backup
+├── shared
+│ ├── components
+│ ├── layout
+│ └── models
+├── app.config.ts
+└── app.routes.ts
+
+
+---
+
+## Application Flow
+
+- User registers
+- User logs in with master password
+- OTP verification completed
+- JWT stored in localStorage
+- Dashboard loads after authentication
+- User manages vault, generator, audit, and backup features
+- Logout clears token and redirects to login
+
+---
+
+## Installation
+
+1. Navigate to frontend directory  
+   `cd frontend`
+
+2. Install dependencies  
+   `npm install`
+
+3. Start development server  
+   `ng serve --port 4200`
+
+Application runs at:  
+http://localhost:4200
+
+---
+
+## Environment Configuration
+
+- Ensure backend is running at  
+  http://localhost:8080
+
+- Update API base URL in `environment.ts` if needed
+
+---
+
+## Security Implementation
+
+- JWT stored in localStorage
+- HTTP interceptor attaches Authorization header
+- AuthGuard protects private routes
+- Token removed on logout
+- Automatic redirect on 401 Unauthorized
+- Reactive form validation
