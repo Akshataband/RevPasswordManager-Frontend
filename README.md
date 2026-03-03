@@ -89,22 +89,40 @@ This frontend communicates with the Spring Boot backend and provides authenticat
 ## Project Structure
 
 src/app
+
 ├── core
+
 │ ├── services
+
 │ ├── interceptors
+
 │ └── guards
+
 ├── features
+
 │ ├── auth
+
 │ ├── dashboard
+
+
 │ ├── vault
+
 │ ├── generator
+
 │ ├── security
+
 │ └── backup
+
 ├── shared
+
 │ ├── components
+
 │ ├── layout
+
 │ └── models
+
 ├── app.config.ts
+
 └── app.routes.ts
 
 
