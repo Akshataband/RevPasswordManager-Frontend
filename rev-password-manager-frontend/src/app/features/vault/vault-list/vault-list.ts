@@ -6,6 +6,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
 import { ViewPasswordModal } from '../../../shared/components/view-password-modal/view-password-modal';
+import { ChangeDetectorRef } from '@angular/core'; 
 
 @Component({
   selector: 'app-vault-list',
@@ -52,26 +53,33 @@ export class VaultList implements OnInit {
 
   constructor(
     private auth: AuthService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit() {
     this.loadPasswords();
   }
 
+  trackById(index: number, item: any) {
+    return item.id;
+  }
   // ================= LOAD =================
   loadPasswords() {
-    this.loading = true;
+
+    this.loading = true;   // FIX: removed early return
 
     // FAVORITES MODE
     if (this.showFavorites) {
       this.auth.getFavorites().subscribe({
         next: (res: any[]) => {
-          this.passwords = res || [];
-          this.totalPages = 0; // disable pagination
-          this.totalElements = this.passwords.length;
-          this.loading = false;
-        },
+  this.passwords = res || [];
+  this.totalPages = 0;
+  this.totalElements = this.passwords.length;
+  this.loading = false;
+
+  this.cdr.detectChanges(); // ADDED: force UI refresh
+},
         error: () => {
           this.loading = false;
         }
@@ -97,12 +105,14 @@ export class VaultList implements OnInit {
 
     this.auth.searchVault(params).subscribe({
       next: (res: any) => {
-        this.passwords = res?.content || [];
-        this.totalPages = res?.totalPages || 0;
-        this.totalElements = res?.totalElements || 0;
-        this.page = res?.number || 0;
-        this.loading = false;
-      },
+  this.passwords = res?.content || [];
+  this.totalPages = res?.totalPages || 0;
+  this.totalElements = res?.totalElements || 0;
+  this.page = res?.number || 0;
+  this.loading = false;
+
+  this.cdr.detectChanges(); 
+},
       error: () => {
         this.loading = false;
       }
@@ -111,8 +121,14 @@ export class VaultList implements OnInit {
 
   // ================= TOGGLE FAVORITES VIEW =================
   toggleShowFavorites() {
+
     this.showFavorites = !this.showFavorites;
+
     this.page = 0;
+
+    this.passwords = [];
+    this.loading = true;
+
     this.loadPasswords();
   }
 
@@ -135,6 +151,7 @@ export class VaultList implements OnInit {
   toggleFavorite(item: any) {
 
     if (item.loading) return;
+
     item.loading = true;
 
     const request$ = item.favorite
@@ -144,9 +161,10 @@ export class VaultList implements OnInit {
     request$.subscribe({
       next: () => {
         item.favorite = !item.favorite;
-        item.loading = false;
+item.loading = false;
 
-        // If removing from favorites screen → remove from UI
+this.cdr.detectChanges(); 
+
         if (this.showFavorites && !item.favorite) {
           this.passwords = this.passwords.filter(p => p.id !== item.id);
         }
@@ -162,14 +180,20 @@ export class VaultList implements OnInit {
   }
 
   deletePassword() {
+
+    if (this.loading) return;
+
     if (!this.deleteId) return;
+
+    this.loading = true;
 
     this.auth.deletePassword(this.deleteId).subscribe(() => {
       this.loadPasswords();
       this.deleteId = null;
+      this.loading = false;
     });
-  }
 
+  }
   goToAdd() {
     this.router.navigate(['/add-password']);
   }

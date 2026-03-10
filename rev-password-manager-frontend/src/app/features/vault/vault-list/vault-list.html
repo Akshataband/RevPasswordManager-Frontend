@@ -51,7 +51,7 @@
       No passwords found.
     </div>
 
-    <div *ngFor="let p of passwords" class="vault-card">
+    <div *ngFor="let p of passwords; trackBy: trackById" class="vault-card">
 
       <h3>{{ p.accountName }}</h3>
 

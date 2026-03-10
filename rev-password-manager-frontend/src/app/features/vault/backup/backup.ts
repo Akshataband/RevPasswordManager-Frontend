@@ -22,6 +22,7 @@ export class Backup {
   constructor(private auth: AuthService) {}
 
   exportBackup() {
+    if (this.loading) return;
 
     if (!this.masterPassword) {
       this.errorMessage = 'Master password is required';
@@ -77,6 +78,7 @@ export class Backup {
   }
 
   importBackup() {
+    if (this.loading) return;
 
     if (!this.masterPassword) {
       this.errorMessage = 'Master password is required';

@@ -11,6 +11,7 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrls: ['./generator.scss']
 })
 export class Generator {
+   loading = false; 
 passwords: { password: string; strength: string }[] = []; 
   strength = '';
   form!: FormGroup;
@@ -31,11 +32,24 @@ passwords: { password: string; strength: string }[] = [];
   }
 
   generate() {
-    this.auth.generatePasswords(this.form.value)
-      .subscribe((res: any) => {
+
+  // ADDED: prevent double click
+  if (this.loading) return;
+
+  this.loading = true; // ADDED
+
+  this.auth.generatePasswords(this.form.value)
+    .subscribe({
+      next: (res: any) => {
         this.passwords = res;
-      });
-  }
+        this.loading = false; // ADDED
+      },
+      error: () => {
+        this.loading = false; // ADDED
+      }
+    });
+
+}
 
   copy(password: string) {
     navigator.clipboard.writeText(password);
@@ -44,18 +58,30 @@ passwords: { password: string; strength: string }[] = [];
 
   save(password: string) {
 
-    const payload = {
-      accountName: 'Generated Account',
-      website: '',
-      username: '',
-      password: password,   // make sure backend expects this name
-      category: 'Generated',
-      notes: ''
-    };
+  // ADDED: prevent double click
+  if (this.loading) return;
 
-    this.auth.saveGeneratedPassword(payload)
-      .subscribe(() => {
+  this.loading = true; // ADDED
+
+  const payload = {
+    accountName: 'Generated Account',
+    website: '',
+    username: '',
+    password: password,
+    category: 'Generated',
+    notes: ''
+  };
+
+  this.auth.saveGeneratedPassword(payload)
+    .subscribe({
+      next: () => {
         alert('Saved to vault');
-      });
-  }
+        this.loading = false; // ADDED
+      },
+      error: () => {
+        this.loading = false; // ADDED
+      }
+    });
+
+}
 }

@@ -58,6 +58,7 @@ export class Register {
 
   submit() {
 
+    if (this.loading) return; 
   this.errorMessage = '';
 
   if (this.form.invalid) {

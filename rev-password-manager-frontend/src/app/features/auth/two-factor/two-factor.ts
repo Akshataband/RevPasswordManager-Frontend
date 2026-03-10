@@ -15,10 +15,14 @@ export class TwoFactor implements OnInit {
   isEnabled = false;
   isLoading = true;
 
+   enableLoading = false;
+  confirmLoading = false;
+  disableLoading = false;
+
   qrCode: string | null = null;
 
-  confirmCode = '';   // used for enabling
-  disableCode = '';   // used for disabling
+  confirmCode = '';   
+  disableCode = '';  
 
   errorMessage = '';
 
@@ -43,6 +47,8 @@ export class TwoFactor implements OnInit {
   }
 
   enable2FA() {
+    if (this.enableLoading) return;
+    this.enableLoading = true;
     this.errorMessage = '';
 
     this.auth.enable2FA().subscribe({
@@ -53,9 +59,12 @@ export class TwoFactor implements OnInit {
         this.qrCode =
           'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='
           + encodeURIComponent(otpUrl);
+          this.enableLoading = false;
       },
+
       error: () => {
         this.errorMessage = 'Failed to generate QR code';
+        this.enableLoading = false;
       }
     });
   }
@@ -65,6 +74,9 @@ export class TwoFactor implements OnInit {
       this.errorMessage = 'OTP is required';
       return;
     }
+    if (this.confirmLoading) return;
+
+    this.confirmLoading = true;
 
     this.errorMessage = '';
 
@@ -72,10 +84,12 @@ export class TwoFactor implements OnInit {
       next: () => {
         this.qrCode = null;
         this.confirmCode = '';
+        this.confirmLoading = false;
         this.loadStatus();
       },
       error: (err) => {
         this.errorMessage = 'Invalid or expired OTP';
+        this.confirmLoading = false;
       }
     });
   }
@@ -85,16 +99,19 @@ export class TwoFactor implements OnInit {
       this.errorMessage = 'OTP is required';
       return;
     }
-
+    if (this.disableLoading) return;
+this.disableLoading = true;
     this.errorMessage = '';
 
     this.auth.disable2FA(this.disableCode.trim()).subscribe({
       next: () => {
         this.disableCode = '';
+        this.disableLoading = false;
         this.loadStatus();
       },
       error: () => {
         this.errorMessage = 'Invalid OTP';
+        this.disableLoading = false;
       }
     });
   }

@@ -23,7 +23,7 @@ export class VerifyOtp {
   ) {}
 
   submit() {
-
+if (this.loading) return; 
     const username = this.auth.getTempUsername();
 
     if (!username) {
