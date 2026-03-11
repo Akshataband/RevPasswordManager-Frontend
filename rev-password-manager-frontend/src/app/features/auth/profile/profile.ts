@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-profile',
@@ -25,9 +26,10 @@ export class Profile implements OnInit {
   user: any;
 
   constructor(
-    private fb: FormBuilder,
-    private auth: AuthService
-  ) {
+  private fb: FormBuilder,
+  private auth: AuthService,
+  private cdr: ChangeDetectorRef
+) {
     this.form = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -42,26 +44,38 @@ export class Profile implements OnInit {
   // ================= LOAD USER =================
 
   loadUserProfile() {
-    this.loading = true;
 
-    this.auth.getCurrentUser().subscribe({
-      next: (res: any) => {
-        this.user = res;
+  this.loading = true;
 
-        // Patch values into form
-        this.form.patchValue({
-          name: res.name,
-          email: res.email,
-          phoneNumber: res.phoneNumber
-        });
+  this.auth.getCurrentUser().subscribe({
 
-        this.loading = false;
-      },
-      error: () => {
-        this.loading = false;
-      }
-    });
-  }
+    next: (res: any) => {
+
+      console.log("Profile response:", res);
+
+      this.user = res;
+
+      this.form.patchValue({
+        name: res.name,
+        email: res.email,
+        phoneNumber: res.phoneNumber
+      });
+
+      this.loading = false;
+
+      this.cdr.detectChanges();
+    },
+
+    error: () => {
+
+      this.loading = false;
+
+      this.cdr.detectChanges();
+    }
+
+  });
+
+}
 
   // ================= PROFILE UPDATE =================
 

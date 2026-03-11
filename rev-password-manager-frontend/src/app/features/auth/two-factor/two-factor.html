@@ -11,14 +11,15 @@
     <p *ngIf="!isEnabled">2FA is currently <strong>DISABLED</strong></p>
     <p *ngIf="isEnabled">2FA is currently <strong>ENABLED</strong></p>
 
-    <!-- Enable Section -->
     <button
-      *ngIf="!isEnabled && !qrCode"
-      class="btn-primary"
-      (click)="enable2FA()"
-      [disabled]="enableLoading">
-      {{ enableLoading ? 'Generating QR...' : 'Enable 2FA' }}
-    </button>
+  *ngIf="!isEnabled && !qrCode"
+  class="btn-primary"
+  (click)="enable2FA()"
+  [disabled]="enableLoading">
+
+  {{ enableLoading ? 'Generating QR...' : 'Enable 2FA' }}
+
+</button>
 
     <!-- QR & Confirm -->
     <div *ngIf="qrCode" class="qr-section">

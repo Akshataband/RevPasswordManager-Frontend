@@ -8,13 +8,10 @@
     <div *ngIf="!auditStarted" class="input-section">
 
       <div class="input-row">
-        <input
-          type="password"
-          placeholder="Enter master password"
-          [(ngModel)]="masterPassword" />
+        <input type="password" placeholder="Enter master password" [(ngModel)]="masterPassword" />
 
-        <button class="btn-primary" (click)="runAudit()">
-          Run Audit
+        <button class="btn-primary" (click)="runAudit()" [disabled]="loading">
+          {{ loading ? 'Running...' : 'Run Audit' }}
         </button>
       </div>
 
@@ -24,8 +21,7 @@
 
     </div>
 
-    <!-- LOADING -->
-    <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+    <app-loading-spinner *ngIf="loading && !report"></app-loading-spinner>
 
     <!-- RESULTS -->
     <div *ngIf="report && !loading" class="audit-results">
@@ -47,10 +43,7 @@
 
     </div>
 
-    <button
-      *ngIf="report && !loading"
-      class="btn-outline reset-btn"
-      (click)="reset()">
+    <button *ngIf="report && !loading" class="btn-outline reset-btn" (click)="reset()">
       Run Again
     </button>
 

@@ -8,13 +8,10 @@
     <div *ngIf="!alertsLoaded" class="input-section">
 
       <div class="input-row">
-        <input
-          type="password"
-          [(ngModel)]="masterPassword"
-          placeholder="Enter master password" />
+        <input type="password" [(ngModel)]="masterPassword" placeholder="Enter master password" />
 
-        <button class="btn-primary" (click)="loadAlerts()">
-          Load Alerts
+        <button class="btn-primary" (click)="loadAlerts()" [disabled]="loading">
+          {{ loading ? 'Loading...' : 'Load Alerts' }}
         </button>
       </div>
 
@@ -24,7 +21,6 @@
 
     </div>
 
-    <!-- Spinner -->
     <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 
     <!-- Alerts List -->

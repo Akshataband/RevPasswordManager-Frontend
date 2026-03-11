@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
 import { FormsModule } from '@angular/forms';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-two-factor',
@@ -26,48 +27,81 @@ export class TwoFactor implements OnInit {
 
   errorMessage = '';
 
-  constructor(private auth: AuthService) {}
+  constructor(
+  private auth: AuthService,
+  private cdr: ChangeDetectorRef
+) {}
 
   ngOnInit(): void {
     this.loadStatus();
   }
 
   loadStatus() {
-    this.isLoading = true;
 
-    this.auth.get2FAStatus().subscribe({
-      next: (res: boolean) => {
-        this.isEnabled = res;
-        this.isLoading = false;
-      },
-      error: () => {
-        this.isLoading = false;
-      }
-    });
-  }
+  this.isLoading = true;
 
+  this.auth.get2FAStatus().subscribe({
+
+    next: (res: boolean) => {
+
+      this.isEnabled = res;
+      this.isLoading = false;
+
+      this.cdr.detectChanges();
+    },
+
+    error: () => {
+
+      this.isLoading = false;
+
+      this.cdr.detectChanges();
+    }
+  });
+}
   enable2FA() {
-    if (this.enableLoading) return;
-    this.enableLoading = true;
-    this.errorMessage = '';
 
-    this.auth.enable2FA().subscribe({
-      next: (res: any) => {
-        const otpUrl = res.qr;
+  if (this.enableLoading) return;
 
-        // Convert otpauth URL into real QR image
-        this.qrCode =
-          'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='
-          + encodeURIComponent(otpUrl);
-          this.enableLoading = false;
-      },
+  this.enableLoading = true;
+  this.errorMessage = '';
 
-      error: () => {
-        this.errorMessage = 'Failed to generate QR code';
+  this.auth.enable2FA().subscribe({
+
+    next: (res: any) => {
+
+      console.log("QR response:", res);
+
+      const otpUrl =
+        res?.qr ||
+        res?.data?.qr ||
+        res?.otpAuthUrl ||
+        res?.otpauth ||
+        '';
+
+      if (!otpUrl) {
+        this.errorMessage = 'QR code not received from server';
         this.enableLoading = false;
+        return;
       }
-    });
-  }
+
+      this.qrCode =
+        'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='
+        + encodeURIComponent(otpUrl);
+
+      this.enableLoading = false;
+
+      this.cdr.detectChanges();   // 🔥 forces UI render
+    },
+
+    error: () => {
+
+      this.errorMessage = 'Failed to generate QR code';
+      this.enableLoading = false;
+
+      this.cdr.detectChanges();
+    }
+  });
+}
 
   confirm2FA() {
     if (!this.confirmCode.trim()) {

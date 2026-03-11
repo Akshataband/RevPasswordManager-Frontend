@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-security-alerts',
@@ -14,43 +15,59 @@ import { LoadingSpinner } from '../../../shared/components/loading-spinner/loadi
 export class SecurityAlerts {
 
   masterPassword = '';
-  alerts: string[] = [];
+  alerts: string[] = [];  
   loading = false;
   errorMessage = '';
   alertsLoaded = false;
 
-  constructor(private auth: AuthService) {}
+ constructor(
+  private auth: AuthService,
+  private cdr: ChangeDetectorRef
+) {}
 
   loadAlerts() {
 
-    if (!this.masterPassword) {
-      this.errorMessage = 'Master password is required';
-      return;
-    }
-
-    this.loading = true;
-    this.errorMessage = '';
-    this.alertsLoaded = true;
-
-    this.auth.getSecurityAlerts(this.masterPassword)
-      .subscribe({
-        next: (res: any) => {
-          this.alerts = res?.alerts || [];
-          this.loading = false;
-        },
-        error: (err) => {
-          this.alerts = [];
-          this.loading = false;
-          this.errorMessage =
-            err?.error?.message || 'Invalid master password';
-        }
-      });
+  if (!this.masterPassword.trim()) {
+    this.errorMessage = 'Master password is required';
+    return;
   }
 
+  this.loading = true;
+  this.errorMessage = '';
+  this.alerts = [];
+  this.alertsLoaded = false;
+
+  this.auth.getSecurityAlerts(this.masterPassword)
+    .subscribe({
+      next: (res: any) => {
+
+        console.log("Alerts response:", res);
+
+        this.alerts = [...(res?.alerts || [])];
+        this.alertsLoaded = true;
+
+        this.loading = false;
+
+        this.cdr.detectChanges();
+      },
+
+      error: (err) => {
+
+        this.loading = false;
+        this.alertsLoaded = false;
+
+        this.errorMessage =
+          err?.error?.message || 'Invalid master password';
+
+        this.cdr.detectChanges();
+      }
+    });
+}
   reset() {
-    this.masterPassword = '';
-    this.alerts = [];
-    this.alertsLoaded = false;
-    this.errorMessage = '';
-  }
+  this.masterPassword = '';
+  this.alerts = [];
+  this.alertsLoaded = false;
+  this.loading = false;
+  this.errorMessage = '';
+}
 }

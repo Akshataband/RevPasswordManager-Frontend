@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
+import { ChangeDetectorRef } from '@angular/core'; 
 
 @Component({
   selector: 'app-view-password-modal',
@@ -20,36 +21,41 @@ export class ViewPasswordModal {
   error = '';
   isLoading = false;
 
-  constructor(private auth: AuthService) {}
+  constructor(private auth: AuthService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   reveal() {
-    console.log("Reveal clicked");
-    console.log("ID:", this.passwordId);
-    console.log("Master:", this.masterPassword);
 
-    if (!this.masterPassword) {
-      this.error = 'Master password required';
-      return;
-    }
-
-    this.isLoading = true;
-
-    this.auth.viewPassword(this.passwordId, this.masterPassword)
-      .subscribe({
-        next: (res: any) => {
-  console.log("Response:", res);
-
-  this.error = ''; // ✅ clear old error
-  this.revealedPassword = res.password;
-  this.isLoading = false;
-},
-        error: (err) => {
-          console.log("Error:", err);
-          this.error = 'Invalid master password';
-          this.isLoading = false;
-        }
-      });
+  if (!this.masterPassword.trim()) {
+    this.error = 'Master password required';
+    return;
   }
+
+  this.isLoading = true;
+
+  this.auth.viewPassword(this.passwordId, this.masterPassword)
+    .subscribe({
+      next: (res: any) => {
+
+  console.log("API RESPONSE:", res);
+
+  this.error = '';
+
+  this.revealedPassword = res.password;
+
+  this.isLoading = false;
+
+  this.cdr.detectChanges();   
+},
+      error: () => {
+
+        this.error = 'Invalid master password';
+        this.isLoading = false;
+
+      }
+    });
+}
 
   closeModal() {
     this.masterPassword = '';

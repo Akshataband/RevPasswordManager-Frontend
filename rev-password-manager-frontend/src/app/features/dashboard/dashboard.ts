@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { LoadingSpinner } from '../../shared/components/loading-spinner/loading-spinner';
 import { StatsCard } from '../../shared/components/stats-card/stats-card';
 import { AuthService } from '../../core/services/auth.service';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,27 +21,44 @@ export class Dashboard implements OnInit {
   data: any;
   isLoading = true;
 
-  constructor(private auth: AuthService) {}
+  constructor(
+  private auth: AuthService,
+  private cdr: ChangeDetectorRef
+) {}
 
   ngOnInit(): void {
     this.loadDashboard();
   }
 
-  loadDashboard() {
-    this.isLoading = true;
+ loadDashboard() {
 
-    this.auth.getDashboard().subscribe({
-      next: (res: any) => {
-        console.log("Dashboard response:", res);
-        this.data = res;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.log("Dashboard error:", err);
-        this.isLoading = false;
-      }
-    });
-  }
+  this.isLoading = true;
+
+  this.auth.getDashboard().subscribe({
+
+    next: (res: any) => {
+
+      console.log("Dashboard response:", res);
+
+      this.data = res;
+
+      this.isLoading = false;
+
+      this.cdr.detectChanges();
+    },
+
+    error: (err) => {
+
+      console.log("Dashboard error:", err);
+
+      this.isLoading = false;
+
+      this.cdr.detectChanges();
+    }
+
+  });
+
+}
 
   get securityScore(): number {
     if (!this.data) return 0;

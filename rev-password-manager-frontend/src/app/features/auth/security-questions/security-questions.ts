@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
 
+import { ChangeDetectorRef } from '@angular/core';
 @Component({
   selector: 'app-view-security-questions',
   standalone: true,
@@ -20,8 +21,10 @@ export class ViewSecurityQuestions implements OnInit {
   loading = false;
   errorMessage = '';
   successMessage = '';
-
-  constructor(private service: AuthService) {}
+constructor(
+  private service: AuthService,
+  private cdr: ChangeDetectorRef
+) {}
 
   ngOnInit() {
     this.loadQuestions();
@@ -45,7 +48,7 @@ export class ViewSecurityQuestions implements OnInit {
   this.loading = false;
 }
 
- updateQuestions() {
+updateQuestions() {
 
   this.errorMessage = '';
   this.successMessage = '';
@@ -67,15 +70,26 @@ export class ViewSecurityQuestions implements OnInit {
     questions: this.answers
   }).subscribe({
     next: () => {
+
       this.successMessage = 'Security questions updated successfully';
+
       this.masterPassword = '';
       this.answers.forEach(a => a.answer = '');
+
       this.loading = false;
+
+      // ⭐ force UI refresh
+      this.cdr.detectChanges();
     },
+
     error: () => {
+
       this.errorMessage = 'Update failed';
       this.loading = false;
+
+      this.cdr.detectChanges();
     }
   });
+
 }
 }

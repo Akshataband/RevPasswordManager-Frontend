@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-generator',
@@ -11,15 +12,16 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrls: ['./generator.scss']
 })
 export class Generator {
-   loading = false; 
+  loading = false; 
 passwords: { password: string; strength: string }[] = []; 
   strength = '';
   form!: FormGroup;
 
   constructor(
-    private fb: FormBuilder,
-    private auth: AuthService
-  ) {
+  private fb: FormBuilder,
+  private auth: AuthService,
+  private cdr: ChangeDetectorRef
+) {
     this.form = this.fb.group({
       length: [12],
       count: [1],
@@ -33,24 +35,34 @@ passwords: { password: string; strength: string }[] = [];
 
   generate() {
 
-  // ADDED: prevent double click
   if (this.loading) return;
 
-  this.loading = true; // ADDED
+  this.loading = true;
 
   this.auth.generatePasswords(this.form.value)
     .subscribe({
       next: (res: any) => {
-        this.passwords = res;
-        this.loading = false; // ADDED
+
+        console.log("Generated passwords:", res);
+
+        // Force Angular to detect changes
+        this.passwords = [...res];
+
+        this.loading = false;
+
+        this.cdr.detectChanges();
+
       },
       error: () => {
-        this.loading = false; // ADDED
+
+        this.loading = false;
+
+        this.cdr.detectChanges();
+
       }
     });
 
 }
-
   copy(password: string) {
     navigator.clipboard.writeText(password);
     alert('Copied to clipboard');
@@ -58,10 +70,9 @@ passwords: { password: string; strength: string }[] = [];
 
   save(password: string) {
 
-  // ADDED: prevent double click
   if (this.loading) return;
 
-  this.loading = true; // ADDED
+  this.loading = true; 
 
   const payload = {
     accountName: 'Generated Account',
@@ -76,10 +87,10 @@ passwords: { password: string; strength: string }[] = [];
     .subscribe({
       next: () => {
         alert('Saved to vault');
-        this.loading = false; // ADDED
+        this.loading = false; 
       },
       error: () => {
-        this.loading = false; // ADDED
+        this.loading = false;
       }
     });
 

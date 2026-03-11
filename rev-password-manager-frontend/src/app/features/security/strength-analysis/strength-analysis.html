@@ -16,7 +16,11 @@
       </span>
     </div>
 
-    <button (click)="checkStrength()">Check</button>
+    <button
+  (click)="checkStrength()"
+  [disabled]="loading">
+  {{ loading ? 'Checking...' : 'Check' }}
+</button>
 
     <p *ngIf="strength">
       Strength: <strong>{{ strength }}</strong>

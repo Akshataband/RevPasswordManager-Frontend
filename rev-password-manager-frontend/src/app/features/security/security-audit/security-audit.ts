@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
+import { ChangeDetectorRef } from '@angular/core';
 import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
 
 @Component({
@@ -19,35 +20,48 @@ export class SecurityAudit {
   errorMessage = '';
   auditStarted = false;
 
-  constructor(private auth: AuthService) {}
+  constructor(
+  private auth: AuthService,
+  private cdr: ChangeDetectorRef
+) {}
 
   runAudit() {
 
-    if (!this.masterPassword) {
-      this.errorMessage = 'Master password is required';
-      return;
-    }
-
-    this.loading = true;
-    this.errorMessage = '';
-    this.auditStarted = true;
-
-    this.auth.securityAudit(this.masterPassword)
-      .subscribe({
-        next: (res: any) => {
-          this.report = res || null;
-          this.loading = false;
-        },
-        error: (err) => {
-          this.report = null;
-          this.loading = false;
-
-          this.errorMessage =
-            err?.error?.message || 'Invalid master password';
-        }
-      });
+  if (!this.masterPassword.trim()) {
+    this.errorMessage = 'Master password is required';
+    return;
   }
 
+  this.loading = true;
+  this.errorMessage = '';
+  this.report = null;
+
+  this.auth.securityAudit(this.masterPassword)
+    .subscribe({
+      next: (res: any) => {
+
+        console.log("Audit response:", res);
+
+        this.report = { ...res };   // force new object reference
+        this.auditStarted = true;
+
+        this.loading = false;
+
+        this.cdr.detectChanges();   // force Angular refresh
+      },
+
+      error: (err) => {
+
+        this.loading = false;
+        this.auditStarted = false;
+
+        this.errorMessage =
+          err?.error?.message || 'Invalid master password';
+
+        this.cdr.detectChanges();
+      }
+    });
+}
   reset() {
     this.masterPassword = '';
     this.report = null;

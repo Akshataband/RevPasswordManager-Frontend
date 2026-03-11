@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-backup',
@@ -19,28 +20,33 @@ export class Backup {
   errorMessage = '';
   selectedFileContent = '';
 
-  constructor(private auth: AuthService) {}
+  constructor(
+    private service: AuthService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  // ================= EXPORT BACKUP =================
 
   exportBackup() {
-    if (this.loading) return;
 
-    if (!this.masterPassword) {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    if (!this.masterPassword.trim()) {
       this.errorMessage = 'Master password is required';
       return;
     }
 
     this.loading = true;
-    this.successMessage = '';
-    this.errorMessage = '';
 
-    this.auth.exportBackup(this.masterPassword)
+    this.service.exportBackup(this.masterPassword)
       .subscribe({
-        next: (res: string) => {
 
-          const blob = new Blob([res], { type: 'text/plain' });
+        next: (blob: Blob) => {
+
           const url = window.URL.createObjectURL(blob);
-
           const a = document.createElement('a');
+
           a.href = url;
           a.download = 'revvault-backup.enc';
           a.click();
@@ -49,14 +55,25 @@ export class Backup {
 
           this.successMessage = 'Backup downloaded successfully';
           this.loading = false;
+
+          this.cdr.detectChanges();
         },
-        error: (err) => {
+
+        error: (err: any) => {
+
           this.errorMessage =
-            err?.error?.message || 'Export failed';
+            err?.error?.message || 'Backup download failed';
+
           this.loading = false;
+
+          this.cdr.detectChanges();
         }
+
       });
+
   }
+
+  // ================= FILE SELECT =================
 
   onFileSelected(event: any) {
 
@@ -77,7 +94,10 @@ export class Backup {
     reader.readAsText(file);
   }
 
+  // ================= IMPORT BACKUP =================
+
   importBackup() {
+
     if (this.loading) return;
 
     if (!this.masterPassword) {
@@ -94,27 +114,45 @@ export class Backup {
     this.successMessage = '';
     this.errorMessage = '';
 
-    this.auth.importBackup({
+    this.service.importBackup({
       masterPassword: this.masterPassword,
       encryptedBackup: this.selectedFileContent
     }).subscribe({
+
       next: () => {
+
         this.successMessage = 'Backup imported successfully';
+
         this.selectedFileContent = '';
         this.loading = false;
+
+        this.cdr.detectChanges();
       },
-      error: (err) => {
+
+      error: (err: any) => {
+
         this.errorMessage =
           err?.error?.message || 'Import failed';
+
         this.loading = false;
+
+        this.cdr.detectChanges();
       }
+
     });
+
   }
+
+  // ================= RESET =================
 
   reset() {
     this.masterPassword = '';
     this.selectedFileContent = '';
     this.successMessage = '';
     this.errorMessage = '';
+    this.loading = false;
+
+    this.cdr.detectChanges();
   }
+
 }

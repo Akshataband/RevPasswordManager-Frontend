@@ -4,26 +4,15 @@
 
     <h1>Password Generator</h1>
 
-    <form class="generator-form"
-          [formGroup]="form"
-          (ngSubmit)="generate()">
-
+    <form class="generator-form" [formGroup]="form">
       <div class="form-group">
         <label for="length">Length</label>
-        <input id="length"
-               type="number"
-               formControlName="length"
-               min="8"
-               max="64" />
+        <input id="length" type="number" formControlName="length" min="8" max="64" />
       </div>
 
       <div class="form-group">
         <label for="count">Count</label>
-        <input id="count"
-               type="number"
-               formControlName="count"
-               min="1"
-               max="10" />
+        <input id="count" type="number" formControlName="count" min="1" max="10" />
       </div>
 
       <div class="checkbox-group">
@@ -34,17 +23,20 @@
         <label><input type="checkbox" formControlName="excludeSimilar"> Exclude Similar (0,O,1,l)</label>
       </div>
 
-      <button type="submit" class="btn-primary">
-        Generate
-      </button>
+      <button
+  type="button"
+  class="btn-primary"
+  (click)="generate()"
+  [disabled]="loading">
+  {{ loading ? 'Generating...' : 'Generate' }}
+</button>
 
     </form>
 
     <!-- GENERATED PASSWORDS -->
     <div class="generated-list" *ngIf="passwords.length > 0">
 
-      <div class="password-card"
-           *ngFor="let p of passwords">
+      <div class="password-card" *ngFor="let p of passwords">
 
         <h3>{{ p.password }}</h3>
 

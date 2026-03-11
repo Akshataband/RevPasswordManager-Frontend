@@ -255,13 +255,13 @@ disable2FA(code: string) {
 
   // ================= BACKUP =================
 
-  exportBackup(masterPassword: string) {
-    return this.http.post(
-      `${this.api}/api/backup/export`,
-      { masterPassword },
-      { responseType: 'text' }
-    );
-  }
+  exportBackup(masterPassword: string): Observable<Blob> {
+  return this.http.post(
+    `${this.api}/api/backup/export`,
+    { masterPassword },
+    { responseType: 'blob' }
+  );
+}
 
   importBackup(data: any) {
     return this.http.post(`${this.api}/api/backup/import`, data);
