@@ -30,7 +30,7 @@ export class Dashboard implements OnInit {
     this.loadDashboard();
   }
 
- loadDashboard() {
+loadDashboard() {
 
   this.isLoading = true;
 
@@ -39,6 +39,26 @@ export class Dashboard implements OnInit {
     next: (res: any) => {
 
       console.log("Dashboard response:", res);
+
+      // recompute weak passwords
+      const passwords = res.recentPasswords || [];
+
+      let weakCount = 0;
+
+      passwords.forEach((p: any) => {
+
+        const password = p.password || '';
+
+        const strongRegex =
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
+        if (!strongRegex.test(password)) {
+          weakCount++;
+        }
+
+      });
+
+      res.weakPasswords = weakCount;
 
       this.data = res;
 

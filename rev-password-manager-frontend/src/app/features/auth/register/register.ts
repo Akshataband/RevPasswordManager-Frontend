@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { finalize } from 'rxjs/operators';
 import {
   FormBuilder,
   Validators,
@@ -58,7 +59,8 @@ export class Register {
 
   submit() {
 
-    if (this.loading) return; 
+  if (this.loading) return;
+
   this.errorMessage = '';
 
   if (this.form.invalid) {
@@ -73,10 +75,9 @@ export class Register {
 
   this.loading = true;
 
-  // Convert answers into QuestionAnswer format
   const formattedSecurityAnswers = this.fixedQuestions.map(
     (question, index) => ({
-      question: question,
+      question,
       answer: this.securityAnswers.at(index).value
     })
   );
@@ -90,15 +91,19 @@ export class Register {
   };
 
   this.auth.register(payload).subscribe({
+
     next: () => {
-      alert('Registration successful. Please login.');
+      alert('Registration successful');
       this.router.navigate(['/login']);
     },
+
     error: (err: any) => {
-      this.errorMessage =
-        err.error?.message || 'Registration failed';
-      this.loading = false;
-    },
-    complete: () => this.loading = false
+      this.errorMessage = err.error?.message || 'Registration failed';
+    }
+
+  }).add(() => {
+    // This always runs (success or error)
+    this.loading = false;
   });
+
 }}

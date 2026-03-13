@@ -14,13 +14,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   let authReq = req;
 
-  // 🚫 Do not attach token to auth endpoints
-  if (
-    token &&
-    !req.url.includes('/auth/login') &&
-    !req.url.includes('/auth/register') &&
-    !req.url.includes('/auth/verify-otp')
-  ) {
+  // Do NOT attach token to auth endpoints
+  const isAuthRequest =
+    req.url.includes('/auth/login') ||
+    req.url.includes('/auth/register') ||
+    req.url.includes('/auth/verify-2fa');
+
+  if (token && !isAuthRequest) {
     authReq = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
@@ -29,20 +29,25 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   return next(authReq).pipe(
+
     catchError((error) => {
 
       if (error.status === 401) {
 
+        // Clear session
         auth.clearToken();
         auth.clearTempUsername();
 
-        // Avoid infinite redirect loop
+        // Avoid redirect loop
         if (!router.url.includes('/login')) {
           router.navigate(['/login']);
         }
+
       }
 
       return throwError(() => error);
+
     })
+
   );
 };

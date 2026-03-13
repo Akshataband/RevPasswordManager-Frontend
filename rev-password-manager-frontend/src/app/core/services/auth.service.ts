@@ -10,36 +10,7 @@ export class AuthService {
   private api = 'http://localhost:8080';
 
   constructor(private http: HttpClient) {}
-// ================= PROFILE =================
 
-  getProfile() {
-    return this.http.get(`${this.api}/auth/me`);
-  }
-  getCurrentUser() {
-  return this.http.get(`${this.api}/auth/me`);
-}
-
-getUsernameFromToken(): string {
-
-  const token = localStorage.getItem('token');
-  if (!token) return '';
-
-  const payload = JSON.parse(atob(token.split('.')[1]));
-  return payload.sub;   // 'sub' usually contains username
-}
-
-// ================= MASTER PASSWORD =================
-
-changeMasterPassword(data: {
-  oldPassword: string;
-  newPassword: string;
-}) {
-  return this.http.put(
-    `${this.api}/auth/change-master-password`,
-    data,
-    { responseType: 'text' }
-  );
-}
   // ================= TOKEN STORAGE =================
 
   private TOKEN_KEY = 'rev_token';
@@ -73,19 +44,35 @@ changeMasterPassword(data: {
     return !!this.getToken();
   }
 
-  // ================= SECURITY QUESTIONS =================
-updateSecurityQuestions(data: any) {
-  return this.http.put(
-    `${this.api}/api/security-questions`,
-    data,
-    { responseType: 'text' }
-  );
+  // ================= PROFILE =================
+
+getProfile(): Observable<any> {
+  return this.http.get(`${this.api}/auth/me`);
 }
-getSecurityQuestions(username: string) {
-  return this.http.get<string[]>(
-    `${this.api}/auth/security-questions/${username}`
-  );
+
+getCurrentUser(): Observable<any> {
+  return this.getProfile();
 }
+
+updateProfile(data: any) {
+  return this.http.put(`${this.api}/auth/update-profile`, data);
+}
+
+  // ================= USER INFO =================
+
+  getUsernameFromToken(): string {
+
+    const token = this.getToken();
+
+    if (!token) return '';
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.sub;
+    } catch {
+      return '';
+    }
+  }
 
   // ================= AUTH =================
 
@@ -98,14 +85,12 @@ getSecurityQuestions(username: string) {
   }
 
   verify2FA(data: { username: string; otp: string }) {
-  return this.http.post(
-    `${this.api}/auth/verify-2fa`,
-    data,
-    {
-      headers: { 'Content-Type': 'application/json' }
-    }
-  );
-}
+    return this.http.post(
+      `${this.api}/auth/verify-2fa`,
+      data
+    );
+  }
+
   logout(): Observable<any> {
     return this.http.post(`${this.api}/auth/logout`, {}).pipe(
       tap(() => {
@@ -114,54 +99,80 @@ getSecurityQuestions(username: string) {
       })
     );
   }
-forgotPassword(data: any) {
-  return this.http.post(
-    `${this.api}/auth/forgot-password`,
-    data,
-    { responseType: 'text' }
-  );
-}
 
-  // ================= PROFILE =================
-
-  updateProfile(data: any) {
-    return this.http.put(`${this.api}/auth/update-profile`, data);
+  forgotPassword(data: any) {
+    return this.http.post(
+      `${this.api}/auth/forgot-password`,
+      data,
+      { responseType: 'text' }
+    );
   }
 
-  // ================= 2FA =================
+  resetMasterPassword(data: any) {
+    return this.http.put(`${this.api}/auth/reset-master-password`, data);
+  }
 
-get2FAStatus(): Observable<boolean> {
-  return this.http.get<boolean>(`${this.api}/auth/2fa-status`);
-}
+  // ================= MASTER PASSWORD =================
 
-enable2FA() {
-  return this.http.post<string>(`${this.api}/auth/enable-2fa`, {});
-}
+  changeMasterPassword(data: {
+    oldPassword: string;
+    newPassword: string;
+  }) {
+    return this.http.put(
+      `${this.api}/auth/change-master-password`,
+      data,
+      { responseType: 'text' }
+    );
+  }
 
-confirm2FA(code: string) {
-  return this.http.post(
-    `${this.api}/auth/confirm-2fa?code=${code}`,
-    {},
-    { responseType: 'text' }
-  );
-}
+  // ================= SECURITY QUESTIONS =================
 
-disable2FA(code: string) {
-  return this.http.post(
-    `${this.api}/auth/disable-2fa?code=${code}`,
-    {},
-    { responseType: 'text' }
-  );
-}
+  getSecurityQuestions(username: string) {
+    return this.http.get<string[]>(
+      `${this.api}/auth/security-questions/${username}`
+    );
+  }
 
-  // ================= SECURITY ANSWER =================
+  updateSecurityQuestions(data: any) {
+    return this.http.put(
+      `${this.api}/api/security-questions`,
+      data,
+      { responseType: 'text' }
+    );
+  }
 
   verifySecurityAnswer(data: any) {
     return this.http.post(`${this.api}/auth/verify-security-answer`, data);
   }
 
-  resetMasterPassword(data: any) {
-    return this.http.put(`${this.api}/auth/reset-master-password`, data);
+  getQuestions() {
+    return this.http.get(`${this.api}/api/security-questions`);
+  }
+
+  // ================= 2FA =================
+
+  get2FAStatus(): Observable<boolean> {
+    return this.http.get<boolean>(`${this.api}/auth/2fa-status`);
+  }
+
+  enable2FA() {
+    return this.http.post<string>(`${this.api}/auth/enable-2fa`, {});
+  }
+
+  confirm2FA(code: string) {
+    return this.http.post(
+      `${this.api}/auth/confirm-2fa?code=${code}`,
+      {},
+      { responseType: 'text' }
+    );
+  }
+
+  disable2FA(code: string) {
+    return this.http.post(
+      `${this.api}/auth/disable-2fa?code=${code}`,
+      {},
+      { responseType: 'text' }
+    );
   }
 
   // ================= DASHBOARD =================
@@ -256,20 +267,15 @@ disable2FA(code: string) {
   // ================= BACKUP =================
 
   exportBackup(masterPassword: string): Observable<Blob> {
-  return this.http.post(
-    `${this.api}/api/backup/export`,
-    { masterPassword },
-    { responseType: 'blob' }
-  );
-}
+    return this.http.post(
+      `${this.api}/api/backup/export`,
+      { masterPassword },
+      { responseType: 'blob' }
+    );
+  }
 
   importBackup(data: any) {
     return this.http.post(`${this.api}/api/backup/import`, data);
   }
 
-  // ================= SECURITY QUESTIONS =================
-
-  getQuestions() {
-    return this.http.get(`${this.api}/api/security-questions`);
-  }
 }
